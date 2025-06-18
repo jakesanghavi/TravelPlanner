@@ -14,6 +14,12 @@ L.Icon.Default.mergeOptions({
   shadowUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png",
 });
 
+const emojiIcon = L.icon({
+  iconUrl: '/pin.png',  // emoji-style image
+  iconSize: [30, 30],
+  iconAnchor: [15, 30],
+});
+
 function App() {
   const [places, setPlaces] = useState({});
   const [form, setForm] = useState({
@@ -81,21 +87,30 @@ function App() {
         zoom={5}
         style={{ height: "100vh", width: "100vw", position: "absolute", top: 0, left: 0, zIndex: 0 }}
       >
-        <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
+        {/* Globe-like green and blue */}
+        <TileLayer
+          url="https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}"
+          attribution='Tiles &copy; <a href="https://www.esri.com/">Esri</a>'
+        />
+        {/* Simpler white and blue
+        <TileLayer
+          url="https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}"
+          attribution='Tiles &copy; <a href="https://www.esri.com/">Esri</a>'
+        /> */}
         {markers.map((m, idx) => (
           <div key={idx}>
-            <Marker position={m.position}>
+            <Marker position={m.position} icon={emojiIcon}>
               <Popup>
                 <strong>{m.city}</strong><br />
                 {m.country}, {m.continent}
                 {m.description && <><br />{m.description}</>}
               </Popup>
             </Marker>
-            <Circle
+            {/* <Circle
               center={m.position}
               radius={1000} // 1km radius; you can scale by population if desired
               pathOptions={{ color: "blue", fillColor: "#30f", fillOpacity: 0.2 }}
-            />
+            /> */}
           </div>
         ))}
       </MapContainer>
