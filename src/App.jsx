@@ -26,8 +26,11 @@ function App() {
     continent: "",
     country: "",
     city: "",
-    data: "",
+    lat: "",
+    lng: "",
+    notes: "",
   });
+
 
   useEffect(() => {
     getPlaces()
@@ -45,16 +48,42 @@ function App() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    const lat = parseFloat(form.lat);
+    const lng = parseFloat(form.lng);
+
+    if (isNaN(lat) || isNaN(lng)) {
+      alert("Latitude and Longitude must be valid numbers.");
+      return;
+    }
+
     try {
-      const parsedData = JSON.parse(form.data); // expects JSON with lat/lng
-      await addOrUpdatePlace({ ...form, data: parsedData });
+      await addOrUpdatePlace({
+        continent: form.continent,
+        country: form.country,
+        city: form.city,
+        lat: lat,
+        lng: lng,
+        notes: form.notes || "",
+      });
+
       const res = await getPlaces();
       setPlaces(res.data);
-      setForm({ continent: "", country: "", city: "", data: "" });
+
+      setForm({
+        continent: "",
+        country: "",
+        city: "",
+        lat: "",
+        lng: "",
+        notes: "",
+      });
     } catch (err) {
-      alert("Invalid JSON for data.");
+      alert("Failed to submit data.");
+      console.error(err);
     }
   };
+
 
   const extractMarkers = () => {
     const markers = [];
@@ -69,7 +98,6 @@ function App() {
               country,
               continent,
               description: data.notes || "",
-              population: data.population || 0,
             });
           }
         }
@@ -108,7 +136,7 @@ function App() {
             </Marker>
             {/* <Circle
               center={m.position}
-              radius={1000} // 1km radius; you can scale by population if desired
+              radius={1000} // 1km radius;
               pathOptions={{ color: "blue", fillColor: "#30f", fillOpacity: 0.2 }}
             /> */}
           </div>
@@ -148,12 +176,33 @@ function App() {
             className="border p-2 rounded"
           />
           <input
-            placeholder='Data (e.g. {"lat":52.52,"lng":13.405})'
-            value={form.data}
-            onChange={(e) => setForm({ ...form, data: e.target.value })}
+            placeholder="Latitude"
+            value={form.lat}
+            onChange={(e) => setForm({ ...form, lat: e.target.value })}
+            className="border p-2 rounded"
+            type="number"
+            step="any"
+            required
+          />
+          <input
+            placeholder="Longitude"
+            value={form.lng}
+            onChange={(e) => setForm({ ...form, lng: e.target.value })}
+            className="border p-2 rounded"
+            type="number"
+            step="any"
+            required
+          />
+          <input
+            placeholder="Notes (optional)"
+            value={form.notes}
+            onChange={(e) => setForm({ ...form, notes: e.target.value })}
             className="border p-2 rounded"
           />
-          <button type="submit" className="bg-blue-600 text-white py-2 rounded hover:bg-blue-700">
+          <button
+            type="submit"
+            className="bg-blue-600 text-white py-2 rounded hover:bg-blue-700"
+          >
             Add / Update Place
           </button>
         </form>

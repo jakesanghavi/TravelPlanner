@@ -47,15 +47,32 @@ app.get("/places", async (req, res) => {
 });
 
 app.post("/places", async (req, res) => {
-  const { continent, country, city, data } = req.body;
+  const { continent, country, city, lat, lng, notes = "" } = req.body;
+
+  // Validate required fields
+  if (!continent || !country || !city) {
+    return res.status(400).json({ error: "Continent, country, and city are required." });
+  }
+
+  if (typeof lat !== "number" || typeof lng !== "number") {
+    return res.status(400).json({ error: "Latitude and longitude must be numbers." });
+  }
+
+  const safeData = {
+    lat,
+    lng,
+    notes
+  };
+
   try {
     const ref = db.ref(`places/${continent}/${country}/${city}`);
-    await ref.set(data);
+    await ref.set(safeData);
     res.status(200).json({ success: true });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 });
+
 
 app.listen(port, () => {
   console.log(`Server running on port ${port}`);
