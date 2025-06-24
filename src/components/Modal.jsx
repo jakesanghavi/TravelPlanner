@@ -1,5 +1,5 @@
 // frontend/src/components/Modal.jsx
-import './add-place-modal.css'; // We'll create this CSS file next
+import './modal.css'; // We'll create this CSS file next
 
 const Modal = ({ isOpen, onClose, children }) => {
   if (!isOpen) return null;

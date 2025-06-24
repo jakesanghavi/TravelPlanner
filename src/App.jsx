@@ -5,8 +5,10 @@ import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import "./index.css";
-import Modal from "./components/AddPlaceModal";
-import PlaceForm from "./components/PlaceForm"; // Import the PlaceForm component
+import Modal from "./components/Modal";
+import PlaceForm from "./components/PlaceForm";
+import ViewDetailsModal from "./components/ViewDetailsModal";
+
 
 // Fix Leaflet's marker icon paths
 delete L.Icon.Default.prototype._getIconUrl;
@@ -25,6 +27,8 @@ const emojiIcon = L.icon({
 function App() {
   const [places, setPlaces] = useState({});
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isViewModalOpen, setIsViewModalOpen] = useState(false);
+  const [selectedPlaceForView, setSelectedPlaceForView] = useState(null);
   const [form, setForm] = useState({ // Form state managed here
     continent: "",
     country: "",
@@ -122,6 +126,12 @@ function App() {
 
   const markers = extractMarkers();
 
+  const openViewDetailsModal = (markerData) => {
+    console.log(markerData)
+    setSelectedPlaceForView(markerData); // Set the data for the view modal
+    setIsViewModalOpen(true); // Open the view modal
+  };
+
   return (
     <div className="app-root">
       <MapContainer
@@ -137,9 +147,26 @@ function App() {
           <div key={idx}>
             <Marker position={m.position} icon={emojiIcon}>
               <Popup>
-                <strong>{m.city}</strong><br />
-                {m.country}, {m.continent}
-                {m.description && <><br />{m.description}</>}
+                <div>
+                  <strong>{m.city}</strong><br />
+                  {m.country}, {m.continent}
+                  {m.description && <><br />Notes: {m.description}</>}
+                  <br />
+                  <button
+                    onClick={() => openViewDetailsModal(m)} // Directly open view modal
+                    style={{
+                      marginTop: '10px',
+                      padding: '5px 10px',
+                      backgroundColor: '#28a745', // Green for view
+                      color: 'white',
+                      border: 'none',
+                      borderRadius: '5px',
+                      cursor: 'pointer',
+                    }}
+                  >
+                    View Details
+                  </button>
+                </div>
               </Popup>
             </Marker>
           </div>
@@ -183,6 +210,11 @@ function App() {
           onFormSubmit={handleSubmit}     // Pass the submit handler
         />
       </Modal>
+      <ViewDetailsModal
+        isOpen={isViewModalOpen}
+        onClose={() => setIsViewModalOpen(false)}
+        placeData={selectedPlaceForView}
+      />
     </div>
   );
 }

@@ -36,3 +36,7 @@
 .modal-close-button:hover {
   color: #000;
 }
+
+.uneditable-place-data p {
+  color: black;
+}
