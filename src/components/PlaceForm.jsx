@@ -22,6 +22,12 @@ const PlaceForm = ({ form, onFormChange, onFormSubmit }) => {
         className="border p-2 rounded w-full"
       />
       <input
+        placeholder="Name"
+        value={form.name}
+        onChange={(e) => onFormChange("name", e.target.value)}
+        className="border p-2 rounded w-full"
+      />
+      <input
         placeholder="Latitude"
         value={form.lat}
         onChange={(e) => onFormChange("lat", e.target.value)}

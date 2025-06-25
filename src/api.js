@@ -9,5 +9,5 @@ const API = axios.create({
 
 export const getPlaces = () => API.get("/places");
 
-export const addOrUpdatePlace = ({ continent, country, city, lat, lng, notes = "" }) =>
-  API.post("/places", { continent, country, city, lat, lng, notes });
+export const addOrUpdatePlace = ({ continent, country, city, name, lat, lng, notes = "" }) =>
+  API.post("/places", { continent, country, city, name, lat, lng, notes });

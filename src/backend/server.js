@@ -47,11 +47,11 @@ app.get("/places", async (req, res) => {
 });
 
 app.post("/places", async (req, res) => {
-  const { continent, country, city, lat, lng, notes = "" } = req.body;
+  const { continent, country, city, name, lat, lng, notes = "" } = req.body;
 
   // Validate required fields
-  if (!continent || !country || !city) {
-    return res.status(400).json({ error: "Continent, country, and city are required." });
+  if (!continent || !country || !city || !name) {
+    return res.status(400).json({ error: "Continent, country, and name are required." });
   }
 
   if (typeof lat !== "number" || typeof lng !== "number") {
@@ -65,7 +65,7 @@ app.post("/places", async (req, res) => {
   };
 
   try {
-    const ref = db.ref(`places/${continent}/${country}/${city}`);
+    const ref = db.ref(`places/${continent}/${country}/${city}/${name}`);
     await ref.set(safeData);
     res.status(200).json({ success: true });
   } catch (err) {

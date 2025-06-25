@@ -80,6 +80,7 @@ function App() {
         continent: form.continent,
         country: form.country,
         city: form.city,
+        name: form.name,
         lat: lat,
         lng: lng,
         notes: form.notes || "",
@@ -90,6 +91,7 @@ function App() {
         continent: "",
         country: "",
         city: "",
+        name: "",
         lat: "",
         lng: "",
         notes: "",
@@ -108,15 +110,18 @@ function App() {
     for (const continent in places) {
       for (const country in places[continent]) {
         for (const city in places[continent][country]) {
-          const data = places[continent][country][city];
-          if (data?.lat && (data?.lng || data?.long)) {
-            markers.push({
-              position: [data.lat, data.lng ?? data.long],
-              city,
-              country,
-              continent,
-              description: data.notes || "",
-            });
+          for (const name in places[continent][country][city]) {
+            const data = places[continent][country][city][name];
+            if (data?.lat && (data?.lng || data?.long)) {
+              markers.push({
+                position: [data.lat, data.lng ?? data.long],
+                name: data.name,
+                city,
+                country,
+                continent,
+                description: data.notes || "",
+              });
+            }
           }
         }
       }
@@ -181,6 +186,7 @@ function App() {
             continent: "",
             country: "",
             city: "",
+            name: "",
             lat: "",
             lng: "",
             notes: "",
