@@ -1,5 +1,5 @@
-// frontend/src/components/PlaceForm.jsx
-const PlaceForm = ({ form, onFormChange, onFormSubmit }) => {
+// Form to upload data
+const PlaceForm = ({ form, onFormChange, onFormSubmit, onFileChange }) => {
   return (
     <form onSubmit={onFormSubmit} className="space-y-3 flex flex-col">
       <h2 className="text-xl font-bold mb-4 text-center">Add/Update Place</h2>
@@ -45,6 +45,14 @@ const PlaceForm = ({ form, onFormChange, onFormSubmit }) => {
         step="any"
         required
       />
+
+      <input
+        type="file"
+        accept="image/*"
+        onChange={onFileChange}
+        className="border p-2 rounded w-full"
+      />
+
       <input
         placeholder="Notes (optional)"
         value={form.notes}

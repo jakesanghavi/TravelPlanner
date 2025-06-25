@@ -1,12 +1,11 @@
-// frontend/src/components/ViewDetailsModal.jsx
-import React from 'react';
-import Modal from './Modal'; // Re-use the existing Modal wrapper
-import './modal.css'; // We'll create this CSS file next
+import Modal from './Modal';
+import './modal.css';
 
 
 const ViewDetailsModal = ({ isOpen, onClose, placeData }) => {
-  if (!placeData) return null; // Don't render if no data is provided
+  if (!placeData) return null;
 
+  // Show info about the place
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
       <h2 className="text-xl font-bold mb-4 text-center">Place Details</h2>

@@ -18,6 +18,7 @@ L.Icon.Default.mergeOptions({
   shadowUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png",
 });
 
+// Custom icon from teh assets folder
 const emojiIcon = L.icon({
   iconUrl: '/pin.png',
   iconSize: [30, 30],
@@ -26,18 +27,58 @@ const emojiIcon = L.icon({
 
 function App() {
   const [places, setPlaces] = useState({});
+  // Stored image for the palace
+  // init as blank and append to form and parse w multer on backend side
+  const [file, setFile] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isViewModalOpen, setIsViewModalOpen] = useState(false);
   const [selectedPlaceForView, setSelectedPlaceForView] = useState(null);
-  const [form, setForm] = useState({ // Form state managed here
+  const [errors, setErrors] = useState({});
+  // Set form to blank at first
+  const [form, setForm] = useState({
     continent: "",
     country: "",
     city: "",
+    name: "",
     lat: "",
     lng: "",
-    notes: "",
+    notes: ""
   });
 
+  // Make sure the place is valid
+  const validateForm = () => {
+    const errors = {};
+
+    if (!form.continent || form.continent.trim().length < 1)
+      errors.continent = 'Continent is required';
+
+    if (!form.country || form.country.trim().length < 1)
+      errors.country = 'Country is required';
+
+    if (!form.city || form.city.trim().length < 1)
+      errors.city = 'City is required';
+
+    if (!form.name || form.name.trim().length < 1)
+      errors.name = 'Place name is required';
+
+    if (!form.lat || isNaN(parseFloat(form.lat)))
+      errors.lat = 'Latitude must be a valid number';
+
+    if (!form.lng || isNaN(parseFloat(form.lng)))
+      errors.lng = 'Longitude must be a valid number';
+
+    // Optional: If no file and no URL, warn the user
+    if (!file)
+      errors.image = 'Please upload an image';
+
+    setErrors(errors);
+
+    // If ever has more than 1 user then actually use this to show the errors
+    return Object.keys(errors).length === 0;
+  };
+
+  // Get all palces from the DB
+  // called on load and on update to refresh
   const fetchPlaces = () => {
     getPlaces()
       .then((res) => {
@@ -52,11 +93,12 @@ function App() {
       });
   };
 
+  // Get placs on app mount
   useEffect(() => {
     fetchPlaces();
   }, []);
 
-  // Handler for changes in the form inputs
+  // Update form as its changed
   const handleFormChange = (field, value) => {
     setForm((prevForm) => ({
       ...prevForm,
@@ -64,9 +106,28 @@ function App() {
     }));
   };
 
+  // Passed to the form and stores the image file
+  const handleFileChange = (event) => {
+    const selectedFile = event.target.files[0];
+    if (selectedFile && selectedFile.type.startsWith('image/')) {
+      setFile(selectedFile);
+    } else {
+      alert('Please upload a valid image file.');
+    }
+  };
+
+  // Process all validation for the form and then put it up
+  // for submission
   const handleSubmit = async (e) => {
+
+    const valid = validateForm();
+    if (!valid) {
+      return
+    }
+
     e.preventDefault();
 
+    // Convert str to float
     const lat = parseFloat(form.lat);
     const lng = parseFloat(form.lng);
 
@@ -75,18 +136,22 @@ function App() {
       return;
     }
 
-    try {
-      await addOrUpdatePlace({
-        continent: form.continent,
-        country: form.country,
-        city: form.city,
-        name: form.name,
-        lat: lat,
-        lng: lng,
-        notes: form.notes || "",
-      });
+    // create formdata object and stack our form and image inot it
+    const formData = new FormData();
+    formData.append('image', file);
+    formData.append("continent", form.continent)
+    formData.append("country", form.country);
+    formData.append("city", form.city);
+    formData.append("name", form.name);
+    formData.append("lat", lat);
+    formData.append("lng", lng);
+    formData.append("notes", form.notes || "");
 
-      // After successful submission, reset the form
+    try {
+      // Call to backend to upload
+      await addOrUpdatePlace(formData);
+
+      // re-blank form
       setForm({
         continent: "",
         country: "",
@@ -95,16 +160,20 @@ function App() {
         lat: "",
         lng: "",
         notes: "",
+        imageFile: null,
       });
 
-      fetchPlaces(); // Re-fetch places to update the map
-      setIsModalOpen(false); // Close the modal
+      // get places again and then close the upload modal
+      fetchPlaces();
+      setIsModalOpen(false);
     } catch (err) {
       alert("Failed to submit data.");
       console.error(err);
     }
   };
 
+  // Get all markers
+  // below structure may change based on db schema updates
   const extractMarkers = () => {
     const markers = [];
     for (const continent in places) {
@@ -129,8 +198,11 @@ function App() {
     return markers;
   };
 
+  // Get teh markers whenever refreshed
   const markers = extractMarkers();
 
+  // Modal for each individual place
+  // would like to make this open on hover eventually
   const openViewDetailsModal = (markerData) => {
     console.log(markerData)
     setSelectedPlaceForView(markerData); // Set the data for the view modal
@@ -139,15 +211,18 @@ function App() {
 
   return (
     <div className="app-root">
+      {/* initialize leaflet. can change params later */}
       <MapContainer
-        center={[51.1657, 10.4515]} // Germany default
+        center={[51.1657, 10.4515]}t
         zoom={5}
         style={{ height: "100vh", width: "100vw", position: "absolute", top: 0, left: 0, zIndex: 0 }}
       >
+        {/* pick nice tiels */}
         <TileLayer
           url="https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}"
           attribution='Tiles &copy; <a href="https://www.esri.com/">Esri</a>'
         />
+        {/* Show our markers with a modal for each */}
         {markers.map((m, idx) => (
           <div key={idx}>
             <Marker position={m.position} icon={emojiIcon}>
@@ -178,6 +253,7 @@ function App() {
         ))}
       </MapContainer>
 
+      {/* open the modal if clicked */}
       <button
         onClick={() => {
           setIsModalOpen(true);
@@ -209,11 +285,13 @@ function App() {
         Add Place
       </button>
 
+      {/* Modals defined here and shown when triggered */}
       <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
         <PlaceForm
-          form={form}           // Pass the form state
-          onFormChange={handleFormChange} // Pass the change handler
-          onFormSubmit={handleSubmit}     // Pass the submit handler
+          form={form}
+          onFormChange={handleFormChange}
+          onFormSubmit={handleSubmit}
+          onFileChange={handleFileChange}
         />
       </Modal>
       <ViewDetailsModal

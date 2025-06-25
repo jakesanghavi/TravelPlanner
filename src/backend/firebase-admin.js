@@ -3,6 +3,7 @@ const admin = require("firebase-admin");
 const dotenv = require("dotenv");
 dotenv.config();
 
+// All firebase params
 admin.initializeApp({
   credential: admin.credential.cert({
     type: process.env.FIREBASE_TYPE,
