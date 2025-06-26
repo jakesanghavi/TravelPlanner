@@ -1,5 +1,5 @@
 // Form to upload data
-const PlaceForm = ({ form, onFormChange, onFormSubmit, onFileChange }) => {
+const PlaceForm = ({ form, onFormChange, onFormSubmit, onFileChange, toDisplay }) => {
   return (
     <form onSubmit={onFormSubmit} className="space-y-3 flex flex-col">
       <h2 className="text-xl font-bold mb-4 text-center">Add/Update Place</h2>
@@ -46,12 +46,30 @@ const PlaceForm = ({ form, onFormChange, onFormSubmit, onFileChange }) => {
         required
       />
 
-      <input
-        type="file"
-        accept="image/*"
-        onChange={onFileChange}
-        className="border p-2 rounded w-full"
-      />
+      <label htmlFor="imageFile" style={{ cursor: 'pointer' }}>
+        {toDisplay ? (
+          <img src={URL.createObjectURL(toDisplay)} alt="Uploaded preview" style={{ maxWidth: '100%', maxHeight: '300px', marginTop: '10px' }} />
+        ) : (
+          <div style={{ border: '1px dashed #ccc', padding: '20px', textAlign: 'center' }}>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="64"
+              height="64"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <path d="M12 5v14M19 12l-7 7-7-7" />
+            </svg>
+            <br />
+            Click to upload
+          </div>
+        )}
+        <input type="file" id="imageFile" name="image" onChange={onFileChange} accept="image/*" style={{ display: 'none' }} />
+      </label>
 
       <input
         placeholder="Notes (optional)"

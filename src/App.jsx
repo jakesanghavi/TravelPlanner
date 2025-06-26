@@ -292,6 +292,7 @@ function App() {
           onFormChange={handleFormChange}
           onFormSubmit={handleSubmit}
           onFileChange={handleFileChange}
+          toDisplay={file}
         />
       </Modal>
       <ViewDetailsModal
