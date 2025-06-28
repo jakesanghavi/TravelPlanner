@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { getPlaces, addOrUpdatePlace } from "./api";
 import { MapContainer, TileLayer, Marker, Popup, useMap } from "react-leaflet";
 import L from "leaflet";
@@ -8,6 +8,7 @@ import Modal from "./components/Modal";
 import PlaceForm from "./components/PlaceForm";
 import ViewDetailsModal from "./components/ViewDetailsModal";
 import PlacesTreeView from "./components/PlacesTreeView";
+import Login from "./components/Login"
 
 // Fix Leaflet's marker icon paths
 delete L.Icon.Default.prototype._getIconUrl;
@@ -44,6 +45,94 @@ function App() {
   const [isViewModalOpen, setIsViewModalOpen] = useState(false);
   const [selectedPlaceForView, setSelectedPlaceForView] = useState(null);
   const [errors, setErrors] = useState({});
+  const [loggedInUser, setLoggedInUser] = useState(null);
+  const generateUserID = () => {
+    return 'user_' + Math.random().toString(36).substring(2, 15);
+  };
+  const getUserID = useCallback(() => {
+    let userID = localStorage.getItem('userID');
+
+    // If the user ID is not found in localStorage, generate a new one
+    if (!userID) {
+      userID = generateUserID();
+      localStorage.setItem('userID', userID);
+    }
+
+    return userID;
+  }, []);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        // get the userID for the user
+        const userID = getUserID();
+
+        // Check if this browser has been used before on the site
+        const response = await fetch(import.meta.env.VITE_BACKEND_URL + '/users/userID/' + userID);
+
+        // If the browser has been used before...
+        if (response.status === 200) {
+          const data = await response.json();
+          // Check if the user is registered too. If they are, log them in automatically
+          if (data.email_address !== null) {
+            const user = await fetch(import.meta.env.VITE_BACKEND_URL + '/users/email/' + data.email_address);
+            const user_resp = await user.json();
+            setLoggedInUser({ email: user_resp.email_address, username: user_resp.username });
+
+            // If they are registered, remove the google OAuth component when the site loads
+            const element = document.getElementById('signInDiv')?.firstChild?.firstChild;
+            if (element) {
+              element.remove();
+            }
+          }
+          // If the user is pseudo-registered (via cookies), fetch their data from a different route
+          // and make their loggedInUser have a null email address. This could be helpful for deciding
+          // when to make "sign in with google" show up
+          else if (data.userID !== null) {
+            const user = await fetch(import.meta.env.VITE_BACKEND_URL + '/users/username/' + data.userID);
+            const user_resp = await user.json();
+            setLoggedInUser({ email: null, username: user_resp.username });
+
+            // If they are registered, remove the google OAuth component when the site loads
+            // We could maybe remove this for pseudo-users
+            const element = document.getElementById('signInDiv')?.firstChild?.firstChild;
+            if (element) {
+              element.remove();
+            }
+          }
+        }
+        // If the browser has not been used before...
+        else {
+          setLoggedInUser({ email: null, username: getUserID() });
+          // Create a new cookie user for the new browser window user
+          await fetch(import.meta.env.VITE_BACKEND_URL + '/users/userID/post/' + userID, {
+            method: 'POST',
+            headers: {
+              'Accept': 'application/json',
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ "userID": userID, "email_address": null })
+          });
+
+          // Post the cookie user with username of their cookie ID
+          await fetch(import.meta.env.VITE_BACKEND_URL + '/users/' + userID, {
+            method: 'POST',
+            headers: {
+              'Accept': 'application/json',
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ "email_address": null, "username": userID })
+          });
+        }
+      } catch (error) {
+        console.error('An error occurred while fetching user data:', error);
+      }
+    };
+
+    fetchData(); // Call the asynchronous function
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   const [form, setForm] = useState({
     continent: "",
     country: "",
@@ -100,6 +189,7 @@ function App() {
   useEffect(() => {
     fetchPlaces();
   }, []);
+
 
   const handleFormChange = (field, value) => {
     setForm((prevForm) => ({
@@ -166,6 +256,32 @@ function App() {
     }
   };
 
+  const handleLoginSuccess = async (email, username) => {
+    const element = document.getElementById('signInDiv')?.firstChild?.firstChild;
+    if (element) {
+      element.remove();
+    }
+
+    const userID = getUserID();
+    // Update the loggedInUser state
+    await fetch(import.meta.env.VITE_BACKEND_URL + '/users/userID/patch/' + userID, {
+      method: 'POST',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ "userID": userID, "email_address": email })
+    });
+
+    setLoggedInUser({ email: email, username: username });
+
+    // const user = await fetch(ROUTE + '/api/users/email/' + email);
+    // const user_resp = await user.json();
+    // setLoggedInUser({ email: user_resp.email_address, username: user_resp.username });
+  };
+
+
+
   const extractMarkers = () => {
     const markers = [];
     for (const continent in places) {
@@ -202,10 +318,23 @@ function App() {
     setIsViewModalOpen(true);
   };
 
+  const openLoginModal = (email) => {
+    document.getElementById('sign-in-modal').style.display = 'block';
+    document.getElementById('signUpEmail').value = email;
+  };
+
   return (
     <div style={{ display: "flex", height: "100vh", width: "100vw" }}>
       {/* Left Panel - 15% */}
       <div style={{ width: "15%", backgroundColor: "#f8f9fa", padding: "10px", overflowY: "auto", color: "black" }}>
+        <Login onLoginSuccess={handleLoginSuccess} uid={getUserID} openLoginModal={openLoginModal} />
+        <div id="signIn">
+          {loggedInUser === null || loggedInUser.email === null ? (
+            <button onClick={openLoginModal}>Sign In</button>
+          ) : (
+            <span>{loggedInUser.username}</span>
+          )}
+        </div>
         <button
           onClick={() => {
             setIsModalOpen(true);
@@ -243,7 +372,7 @@ function App() {
           center={[40, 10.4515]}
           zoom={2.3000001}
           zoomSnap={0.75}
-          zoomDelta={1}
+          zoomDelta={2}
           style={{ height: "100%", width: "100%", zIndex: 0 }}
           minZoom={2.30000001}
         >

@@ -1,5 +1,4 @@
-// frontend/src/components/Modal.jsx
-import './modal.css'; // We'll create this CSS file next
+import '../component_styles/modal.css';
 
 const Modal = ({ isOpen, onClose, children }) => {
   if (!isOpen) return null;

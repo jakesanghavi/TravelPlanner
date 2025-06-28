@@ -1,5 +1,5 @@
 import Modal from './Modal';
-import './modal.css';
+import '../component_styles/modal.css';
 
 
 const ViewDetailsModal = ({ isOpen, onClose, placeData }) => {
