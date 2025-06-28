@@ -1,4 +1,3 @@
-// frontend/src/App.jsx
 import { useEffect, useState } from "react";
 import { getPlaces, addOrUpdatePlace } from "./api"; // Keep addOrUpdatePlace
 import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
@@ -8,6 +7,8 @@ import "./index.css";
 import Modal from "./components/Modal";
 import PlaceForm from "./components/PlaceForm";
 import ViewDetailsModal from "./components/ViewDetailsModal";
+import PlacesTreeView from "./components/PlacesTreeView";
+
 
 
 // Fix Leaflet's marker icon paths
@@ -210,22 +211,53 @@ function App() {
   };
 
   return (
-    <div className="app-root">
-      {/* initialize leaflet. can change params later */}
-      <MapContainer
-        center={[51.1657, 10.4515]}t
-        zoom={5}
-        style={{ height: "100vh", width: "100vw", position: "absolute", top: 0, left: 0, zIndex: 0 }}
-      >
-        {/* pick nice tiels */}
-        <TileLayer
-          url="https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}"
-          attribution='Tiles &copy; <a href="https://www.esri.com/">Esri</a>'
-        />
-        {/* Show our markers with a modal for each */}
-        {markers.map((m, idx) => (
-          <div key={idx}>
-            <Marker position={m.position} icon={emojiIcon}>
+    <div style={{ display: "flex", height: "100vh", width: "100vw" }}>
+      {/* Left Panel - 15% */}
+      <div style={{ width: "15%", backgroundColor: "#f8f9fa", padding: "10px", overflowY: "auto", color: "black" }}>
+        <button
+          onClick={() => {
+            setIsModalOpen(true);
+            setForm({
+              continent: "",
+              country: "",
+              city: "",
+              name: "",
+              lat: "",
+              lng: "",
+              notes: "",
+            });
+          }}
+          style={{
+            width: "100%",
+            padding: "10px",
+            marginBottom: "15px",
+            background: "#007bff",
+            color: "white",
+            border: "none",
+            borderRadius: "5px",
+            cursor: "pointer",
+            boxShadow: "0 2px 5px rgba(0,0,0,0.2)",
+          }}
+        >
+          Add Place
+        </button>
+        <PlacesTreeView data={places} />
+      </div>
+
+      {/* Right Panel - 85% */}
+      <div style={{ width: "85%", position: "relative" }}>
+        {/* Fullscreen Leaflet map inside right panel */}
+        <MapContainer
+          center={[51.1657, 10.4515]}
+          zoom={5}
+          style={{ height: "100%", width: "100%", zIndex: 0 }}
+        >
+          <TileLayer
+            url="https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}"
+            attribution='Tiles &copy; <a href="https://www.esri.com/">Esri</a>'
+          />
+          {markers.map((m, idx) => (
+            <Marker key={idx} position={m.position} icon={emojiIcon}>
               <Popup>
                 <div>
                   <strong>{m.city}</strong><br />
@@ -233,11 +265,11 @@ function App() {
                   {m.description && <><br />Notes: {m.description}</>}
                   <br />
                   <button
-                    onClick={() => openViewDetailsModal(m)} // Directly open view modal
+                    onClick={() => openViewDetailsModal(m)}
                     style={{
                       marginTop: '10px',
                       padding: '5px 10px',
-                      backgroundColor: '#28a745', // Green for view
+                      backgroundColor: '#28a745',
                       color: 'white',
                       border: 'none',
                       borderRadius: '5px',
@@ -249,43 +281,11 @@ function App() {
                 </div>
               </Popup>
             </Marker>
-          </div>
-        ))}
-      </MapContainer>
+          ))}
+        </MapContainer>
+      </div>
 
-      {/* open the modal if clicked */}
-      <button
-        onClick={() => {
-          setIsModalOpen(true);
-          // Optionally reset form when opening if it might contain old data
-          setForm({
-            continent: "",
-            country: "",
-            city: "",
-            name: "",
-            lat: "",
-            lng: "",
-            notes: "",
-          });
-        }}
-        style={{
-          position: "absolute",
-          top: "20px",
-          left: "20px",
-          zIndex: 1,
-          padding: "10px 20px",
-          background: "#007bff",
-          color: "white",
-          border: "none",
-          borderRadius: "5px",
-          cursor: "pointer",
-          boxShadow: "0 2px 5px rgba(0,0,0,0.2)",
-        }}
-      >
-        Add Place
-      </button>
-
-      {/* Modals defined here and shown when triggered */}
+      {/* Modals */}
       <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
         <PlaceForm
           form={form}
@@ -295,6 +295,7 @@ function App() {
           toDisplay={file}
         />
       </Modal>
+
       <ViewDetailsModal
         isOpen={isViewModalOpen}
         onClose={() => setIsViewModalOpen(false)}
