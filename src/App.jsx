@@ -241,10 +241,11 @@ function App() {
       <div style={{ width: "85%", position: "relative" }}>
         <MapContainer
           center={[40, 10.4515]}
-          zoom={2.25}
+          zoom={2.3000001}
           zoomSnap={0.1} // Allow fine-grained zooming
-          zoomDelta={0.2}
+          zoomDelta={1}
           style={{ height: "100%", width: "100%", zIndex: 0 }}
+          minZoom={2.30000001}
         >
           {/* globelike */}
           {/* <TileLayer
@@ -258,6 +259,7 @@ function App() {
             minZoom={0}
             maxZoom={20}
           /> */}
+          {/* Forest gradient style */}
           <TileLayer
             url="https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}"
             attribution="Tiles &copy; Esri &mdash; Esri, DeLorme, NAVTEQ, TomTom, Intermap, iPC, USGS, FAO, NPS, NRCAN, GeoBase, Kadaster NL, Ordnance Survey, Esri Japan, METI, Esri China (Hong Kong), and the GIS User Community"
