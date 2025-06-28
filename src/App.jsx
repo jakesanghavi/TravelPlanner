@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { getPlaces, addOrUpdatePlace } from "./api"; 
+import { getPlaces, addOrUpdatePlace } from "./api";
 import { MapContainer, TileLayer, Marker, Popup, useMap } from "react-leaflet";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
@@ -240,13 +240,27 @@ function App() {
       {/* Right Panel - 85% */}
       <div style={{ width: "85%", position: "relative" }}>
         <MapContainer
-          center={[51.1657, 10.4515]}
-          zoom={5}
+          center={[40, 10.4515]}
+          zoom={2.25}
+          zoomSnap={0.1} // Allow fine-grained zooming
+          zoomDelta={0.2}
           style={{ height: "100%", width: "100%", zIndex: 0 }}
         >
-          <TileLayer
+          {/* globelike */}
+          {/* <TileLayer
             url="https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}"
             attribution='Tiles &copy; <a href="https://www.esri.com/">Esri</a>'
+          /> */}
+          {/* Black and white */}
+          {/* <TileLayer
+            url="https://tiles.stadiamaps.com/tiles/stamen_toner/{z}/{x}/{y}{r}.png"
+            attribution='&copy; <a href="https://www.stadiamaps.com/" target="_blank">Stadia Maps</a> &copy; <a href="https://www.stamen.com/" target="_blank">Stamen Design</a> &copy; <a href="https://openmaptiles.org/" target="_blank">OpenMapTiles</a> &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+            minZoom={0}
+            maxZoom={20}
+          /> */}
+          <TileLayer
+            url="https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}"
+            attribution="Tiles &copy; Esri &mdash; Esri, DeLorme, NAVTEQ, TomTom, Intermap, iPC, USGS, FAO, NPS, NRCAN, GeoBase, Kadaster NL, Ordnance Survey, Esri Japan, METI, Esri China (Hong Kong), and the GIS User Community"
           />
           {markers.map((m, idx) => (
             <Marker key={idx} position={m.position} icon={emojiIcon}>
