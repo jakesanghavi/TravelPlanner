@@ -278,7 +278,7 @@ function App() {
           {/* Control map view based on selected place from tree */}
           <MapController
             position={selectedPlaceForView ? selectedPlaceForView.position : null}
-            zoom={8}
+            zoom={6}
           />
         </MapContainer>
       </div>
