@@ -242,7 +242,7 @@ function App() {
         <MapContainer
           center={[40, 10.4515]}
           zoom={2.3000001}
-          zoomSnap={0.1} // Allow fine-grained zooming
+          zoomSnap={0.75}
           zoomDelta={1}
           style={{ height: "100%", width: "100%", zIndex: 0 }}
           minZoom={2.30000001}
