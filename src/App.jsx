@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import { getPlaces, addOrUpdatePlace } from "./api"; // Keep addOrUpdatePlace
-import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
+import { getPlaces, addOrUpdatePlace } from "./api"; 
+import { MapContainer, TileLayer, Marker, Popup, useMap } from "react-leaflet";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import "./index.css";
@@ -8,8 +8,6 @@ import Modal from "./components/Modal";
 import PlaceForm from "./components/PlaceForm";
 import ViewDetailsModal from "./components/ViewDetailsModal";
 import PlacesTreeView from "./components/PlacesTreeView";
-
-
 
 // Fix Leaflet's marker icon paths
 delete L.Icon.Default.prototype._getIconUrl;
@@ -19,23 +17,33 @@ L.Icon.Default.mergeOptions({
   shadowUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png",
 });
 
-// Custom icon from teh assets folder
+// Custom icon from the assets folder
 const emojiIcon = L.icon({
   iconUrl: '/pin.png',
   iconSize: [30, 30],
   iconAnchor: [15, 30],
 });
 
+// Helper component to control map view
+function MapController({ position, zoom }) {
+  const map = useMap();
+
+  useEffect(() => {
+    if (position) {
+      map.setView(position, zoom, { animate: true });
+    }
+  }, [position, zoom, map]);
+
+  return null;
+}
+
 function App() {
   const [places, setPlaces] = useState({});
-  // Stored image for the palace
-  // init as blank and append to form and parse w multer on backend side
   const [file, setFile] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isViewModalOpen, setIsViewModalOpen] = useState(false);
   const [selectedPlaceForView, setSelectedPlaceForView] = useState(null);
   const [errors, setErrors] = useState({});
-  // Set form to blank at first
   const [form, setForm] = useState({
     continent: "",
     country: "",
@@ -46,7 +54,6 @@ function App() {
     notes: ""
   });
 
-  // Make sure the place is valid
   const validateForm = () => {
     const errors = {};
 
@@ -68,18 +75,14 @@ function App() {
     if (!form.lng || isNaN(parseFloat(form.lng)))
       errors.lng = 'Longitude must be a valid number';
 
-    // Optional: If no file and no URL, warn the user
     if (!file)
       errors.image = 'Please upload an image';
 
     setErrors(errors);
 
-    // If ever has more than 1 user then actually use this to show the errors
     return Object.keys(errors).length === 0;
   };
 
-  // Get all palces from the DB
-  // called on load and on update to refresh
   const fetchPlaces = () => {
     getPlaces()
       .then((res) => {
@@ -94,12 +97,10 @@ function App() {
       });
   };
 
-  // Get placs on app mount
   useEffect(() => {
     fetchPlaces();
   }, []);
 
-  // Update form as its changed
   const handleFormChange = (field, value) => {
     setForm((prevForm) => ({
       ...prevForm,
@@ -107,7 +108,6 @@ function App() {
     }));
   };
 
-  // Passed to the form and stores the image file
   const handleFileChange = (event) => {
     const selectedFile = event.target.files[0];
     if (selectedFile && selectedFile.type.startsWith('image/')) {
@@ -117,18 +117,14 @@ function App() {
     }
   };
 
-  // Process all validation for the form and then put it up
-  // for submission
   const handleSubmit = async (e) => {
+    e.preventDefault();
 
     const valid = validateForm();
     if (!valid) {
-      return
+      return;
     }
 
-    e.preventDefault();
-
-    // Convert str to float
     const lat = parseFloat(form.lat);
     const lng = parseFloat(form.lng);
 
@@ -137,10 +133,9 @@ function App() {
       return;
     }
 
-    // create formdata object and stack our form and image inot it
     const formData = new FormData();
     formData.append('image', file);
-    formData.append("continent", form.continent)
+    formData.append("continent", form.continent);
     formData.append("country", form.country);
     formData.append("city", form.city);
     formData.append("name", form.name);
@@ -149,10 +144,8 @@ function App() {
     formData.append("notes", form.notes || "");
 
     try {
-      // Call to backend to upload
       await addOrUpdatePlace(formData);
 
-      // re-blank form
       setForm({
         continent: "",
         country: "",
@@ -163,8 +156,8 @@ function App() {
         notes: "",
         imageFile: null,
       });
+      setFile(null);
 
-      // get places again and then close the upload modal
       fetchPlaces();
       setIsModalOpen(false);
     } catch (err) {
@@ -173,8 +166,6 @@ function App() {
     }
   };
 
-  // Get all markers
-  // below structure may change based on db schema updates
   const extractMarkers = () => {
     const markers = [];
     for (const continent in places) {
@@ -199,15 +190,16 @@ function App() {
     return markers;
   };
 
-  // Get teh markers whenever refreshed
   const markers = extractMarkers();
 
-  // Modal for each individual place
-  // would like to make this open on hover eventually
   const openViewDetailsModal = (markerData) => {
-    console.log(markerData)
-    setSelectedPlaceForView(markerData); // Set the data for the view modal
-    setIsViewModalOpen(true); // Open the view modal
+    setSelectedPlaceForView(markerData);
+    setIsViewModalOpen(true);
+  };
+
+  const onSelectPlaceFromTree = (placeData) => {
+    setSelectedPlaceForView(placeData);
+    setIsViewModalOpen(true);
   };
 
   return (
@@ -226,6 +218,7 @@ function App() {
               lng: "",
               notes: "",
             });
+            setFile(null);
           }}
           style={{
             width: "100%",
@@ -241,12 +234,11 @@ function App() {
         >
           Add Place
         </button>
-        <PlacesTreeView data={places} />
+        <PlacesTreeView data={places} onSelectPlace={onSelectPlaceFromTree} />
       </div>
 
       {/* Right Panel - 85% */}
       <div style={{ width: "85%", position: "relative" }}>
-        {/* Fullscreen Leaflet map inside right panel */}
         <MapContainer
           center={[51.1657, 10.4515]}
           zoom={5}
@@ -282,6 +274,12 @@ function App() {
               </Popup>
             </Marker>
           ))}
+
+          {/* Control map view based on selected place from tree */}
+          <MapController
+            position={selectedPlaceForView ? selectedPlaceForView.position : null}
+            zoom={8}
+          />
         </MapContainer>
       </div>
 
@@ -293,6 +291,7 @@ function App() {
           onFormSubmit={handleSubmit}
           onFileChange={handleFileChange}
           toDisplay={file}
+          errors={errors}
         />
       </Modal>
 
