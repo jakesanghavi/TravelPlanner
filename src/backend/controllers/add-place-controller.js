@@ -23,9 +23,13 @@ cloudinary.config({
 
 // Get all places in the DB
 const getPlaces = async (req, res) => {
+
+    const { user } = req.body;
+
     try {
-        const ref = db.ref("places");
+        const ref = db.ref(`places/${user}`);
         const snapshot = await ref.once("value");
+        console.log(snapshot.val())
         res.status(200).json(snapshot.val());
     } catch (err) {
         res.status(500).json({ error: err.message });
@@ -36,6 +40,7 @@ const getPlaces = async (req, res) => {
 const postPlace = async (req, res) => {
 
     const {
+        username,
         continent,
         country,
         city,
@@ -78,13 +83,9 @@ const postPlace = async (req, res) => {
         // Delete temp file
         await fs.unlink(filePath);
 
-        const placeRef = db.ref(`places/${continent}/${country}/${city}/${name}`);
+        const placeRef = db.ref(`places/${username}/${continent}/${country}/${city}/${name}`);
 
         await placeRef.set({
-            continent,
-            country,
-            city,
-            name,
             lat: parseFloat(lat),
             lng: parseFloat(lng),
             notes,

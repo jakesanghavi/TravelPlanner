@@ -24,12 +24,16 @@ function PlacesTreeView({ data, onSelectPlace }) {
   // Flattened search results (if search bar has input)
   const getSearchResults = () => {
     const results = [];
+    if (!data) return results;
     for (const continent in data) {
-      for (const country in data[continent]) {
-        for (const city in data[continent][country]) {
-          for (const name in data[continent][country][city]) {
+      const countries = data[continent] || {};
+      for (const country in countries) {
+        const cities = countries[country] || {};
+        for (const city in cities) {
+          const places = cities[city] || {};
+          for (const name in places) {
             if (name.toLowerCase().includes(searchTerm)) {
-              const placeData = data[continent][country][city][name];
+              const placeData = places[name];
               results.push({
                 name,
                 continent,
@@ -89,7 +93,7 @@ function PlacesTreeView({ data, onSelectPlace }) {
         </div>
       ) : (
         // Tree view if no search
-        Object.entries(data).map(([continent, countries]) => {
+        Object.entries(data || {}).map(([continent, countries]) => {
           const continentKey = continent;
           const isContinentExpanded = !!expandedNodes[continentKey];
 
@@ -105,7 +109,7 @@ function PlacesTreeView({ data, onSelectPlace }) {
                 </strong>
               </div>
               {isContinentExpanded &&
-                Object.entries(countries).map(([country, cities]) => {
+                Object.entries(countries || {}).map(([country, cities]) => {
                   const countryKey = `${continent}/${country}`;
                   const isCountryExpanded = !!expandedNodes[countryKey];
 
@@ -121,7 +125,7 @@ function PlacesTreeView({ data, onSelectPlace }) {
                         </em>
                       </div>
                       {isCountryExpanded &&
-                        Object.entries(cities).map(([city, places]) => {
+                        Object.entries(cities || {}).map(([city, places]) => {
                           const cityKey = `${continent}/${country}/${city}`;
                           const isCityExpanded = !!expandedNodes[cityKey];
 
@@ -135,7 +139,7 @@ function PlacesTreeView({ data, onSelectPlace }) {
                                 {city}
                               </div>
                               {isCityExpanded &&
-                                Object.entries(places).map(([name, placeData]) => (
+                                Object.entries(places || {}).map(([name, placeData]) => (
                                   <div
                                     key={name}
                                     style={{

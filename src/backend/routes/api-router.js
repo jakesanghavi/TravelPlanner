@@ -29,7 +29,7 @@ const {
 } = require('../controllers/cookie-user-controller')
 
 // GET places
-router.get("/places", getPlaces);
+router.post("/places", getPlaces);
 
 // POST place with image upload
 router.post("/upload-place", upload.single('image'), postPlace);

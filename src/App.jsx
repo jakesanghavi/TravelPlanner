@@ -173,10 +173,10 @@ function App() {
   };
 
   const fetchPlaces = () => {
-    getPlaces()
+    getPlaces(loggedInUser.username)
       .then((res) => {
-        setPlaces(res.data);
-        console.log("Fetched places successfully:", res.data);
+        setPlaces(res);
+        console.log("Fetched places successfully:", res);
       })
       .catch((err) => {
         console.error("Failed to fetch places:", err);
@@ -187,8 +187,10 @@ function App() {
   };
 
   useEffect(() => {
-    fetchPlaces();
-  }, []);
+    if (loggedInUser) {
+      fetchPlaces();
+    }
+  }, [loggedInUser]);
 
 
   const handleFormChange = (field, value) => {
@@ -210,6 +212,10 @@ function App() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    if (!loggedInUser) {
+      return
+    }
+
     const valid = validateForm();
     if (!valid) {
       return;
@@ -225,6 +231,7 @@ function App() {
 
     const formData = new FormData();
     formData.append('image', file);
+    formData.append("username", loggedInUser.username)
     formData.append("continent", form.continent);
     formData.append("country", form.country);
     formData.append("city", form.city);
@@ -329,40 +336,42 @@ function App() {
       <div style={{ width: "15%", backgroundColor: "#f8f9fa", padding: "10px", overflowY: "auto", color: "black" }}>
         <Login onLoginSuccess={handleLoginSuccess} uid={getUserID} openLoginModal={openLoginModal} />
         <div id="signIn">
-          {loggedInUser === null || loggedInUser.email === null ? (
+          {!loggedInUser?.email ? (
             <button onClick={openLoginModal}>Sign In</button>
           ) : (
             <span>{loggedInUser.username}</span>
           )}
         </div>
-        <button
-          onClick={() => {
-            setIsModalOpen(true);
-            setForm({
-              continent: "",
-              country: "",
-              city: "",
-              name: "",
-              lat: "",
-              lng: "",
-              notes: "",
-            });
-            setFile(null);
-          }}
-          style={{
-            width: "100%",
-            padding: "10px",
-            marginBottom: "15px",
-            background: "#007bff",
-            color: "white",
-            border: "none",
-            borderRadius: "5px",
-            cursor: "pointer",
-            boxShadow: "0 2px 5px rgba(0,0,0,0.2)",
-          }}
-        >
-          Add Place
-        </button>
+        {loggedInUser?.email && (
+          <button
+            onClick={() => {
+              setIsModalOpen(true);
+              setForm({
+                continent: "",
+                country: "",
+                city: "",
+                name: "",
+                lat: "",
+                lng: "",
+                notes: "",
+              });
+              setFile(null);
+            }}
+            style={{
+              width: "100%",
+              padding: "10px",
+              marginBottom: "15px",
+              background: "#007bff",
+              color: "white",
+              border: "none",
+              borderRadius: "5px",
+              cursor: "pointer",
+              boxShadow: "0 2px 5px rgba(0,0,0,0.2)",
+            }}
+          >
+            Add Place
+          </button>
+        )}
         <PlacesTreeView data={places} onSelectPlace={onSelectPlaceFromTree} />
       </div>
 
