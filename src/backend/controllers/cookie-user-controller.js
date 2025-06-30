@@ -1,11 +1,4 @@
-let db;
-try {
-    db = require('../firebase-admin');
-    console.log('success!')
-} catch (err) {
-    console.error("Failed to load Firebase Admin SDK:", err);
-    process.exit(1);
-}
+db = require('../firebase-admin');
 
 const getCookieUser = async (request, response) => {
   const id = request.params.id;

@@ -3,16 +3,7 @@ const os = require("os");
 const path = require("path");
 const fs = require("fs/promises");
 const cloudinary = require("cloudinary").v2;
-
-// NEed to find some way to not call the db params twice
-let db;
-try {
-    db = require('../firebase-admin');
-    console.log('success!')
-} catch (err) {
-    console.error("Failed to load Firebase Admin SDK:", err);
-    process.exit(1);
-}
+db = require('../firebase-admin');
 
 // Config from the .env file
 cloudinary.config({

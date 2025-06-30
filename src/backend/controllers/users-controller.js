@@ -1,14 +1,6 @@
 const nodemailer = require('nodemailer');
 const crypto = require('crypto');
-
-let db;
-try {
-    db = require('../firebase-admin');
-    console.log('success!')
-} catch (err) {
-    console.error("Failed to load Firebase Admin SDK:", err);
-    process.exit(1);
-}
+db = require('../firebase-admin');
 
 
 const transporter = nodemailer.createTransport({
