@@ -1,5 +1,4 @@
-
-export const encodeSeat = {
+const encodeSeat = {
   UNKNOWN_SEAT: 0,
   ECONOMY: 1,
   PREMIUM_ECONOMY: 2,
@@ -7,7 +6,7 @@ export const encodeSeat = {
   FIRST: 4,
 };
 
-export const decodeSeat = {
+const decodeSeat = {
   0: "UNKNOWN_SEAT",
   1: "ECONOMY",
   2: "PREMIUM_ECONOMY",
@@ -15,21 +14,21 @@ export const decodeSeat = {
   4: "FIRST",
 };
 
-export const encodeTrip = {
+const encodeTrip = {
   UNKNOWN_TRIP: 0,
   ROUND_TRIP: 1,
   ONE_WAY: 2,
   MULTI_CITY: 3,
 };
 
-export const decodeTrip = {
+const decodeTrip = {
   0: "UNKNOWN_TRIP",
   1: "ROUND_TRIP",
   2: "ONE_WAY",
   3: "MULTI_CITY",
 };
 
-export const encodePassenger = {
+const encodePassenger = {
   UNKNOWN_PASSENGER: 0,
   ADULT: 1,
   CHILD: 2,
@@ -37,7 +36,7 @@ export const encodePassenger = {
   INFANT_ON_LAP: 4,
 };
 
-export const decodePassenger = {
+const decodePassenger = {
   0: "UNKNOWN_PASSENGER",
   1: "ADULT",
   2: "CHILD",
@@ -45,7 +44,7 @@ export const decodePassenger = {
   4: "INFANT_ON_LAP",
 };
 
-export function encodeAirport(message) {
+function encodeAirport(message) {
   let bb = popByteBuffer();
   _encodeAirport(message, bb);
   return toUint8Array(bb);
@@ -60,7 +59,7 @@ function _encodeAirport(message, bb) {
   }
 }
 
-export function decodeAirport(binary) {
+function decodeAirport(binary) {
   return _decodeAirport(wrapByteBuffer(binary));
 }
 
@@ -88,7 +87,7 @@ function _decodeAirport(bb) {
   return message;
 }
 
-export function encodeFlightData(message) {
+function encodeFlightData(message) {
   let bb = popByteBuffer();
   _encodeFlightData(message, bb);
   return toUint8Array(bb);
@@ -141,7 +140,7 @@ function _encodeFlightData(message, bb) {
   }
 }
 
-export function decodeFlightData(binary) {
+function decodeFlightData(binary) {
   return _decodeFlightData(wrapByteBuffer(binary));
 }
 
@@ -198,7 +197,7 @@ function _decodeFlightData(bb) {
   return message;
 }
 
-export function encodeInfo(message) {
+function encodeInfo(message) {
   let bb = popByteBuffer();
   _encodeInfo(message, bb);
   return toUint8Array(bb);
@@ -246,7 +245,7 @@ function _encodeInfo(message, bb) {
   }
 }
 
-export function decodeInfo(binary) {
+function decodeInfo(binary) {
   return _decodeInfo(wrapByteBuffer(binary));
 }
 
@@ -783,4 +782,19 @@ function writeVarint64ZigZag(bb, value) {
     high: ((high << 1) | (low >>> 31)) ^ flip,
     unsigned: false,
   });
+}
+
+module.exports = {
+  encodeSeat,
+  decodeSeat,
+  encodeTrip,
+  decodeTrip,
+  encodePassenger,
+  decodePassenger,
+  encodeAirport,
+  decodeAirport,
+  encodeFlightData,
+  decodeFlightData,
+  encodeInfo,
+  decodeInfo
 }

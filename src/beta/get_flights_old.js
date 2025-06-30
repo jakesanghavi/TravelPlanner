@@ -1,4 +1,6 @@
-const { chromium } = require('playwright');
+const fetch = require('node-fetch');
+const cheerio = require('cheerio');
+const fs = require('fs').promises;
 
 const {
   encodeInfo,
@@ -6,6 +8,8 @@ const {
   encodeTrip,
   encodePassenger,
 } = require('./flights_proto.js');
+
+// Your classes, unchanged except minor fixes for integration
 
 class FlightData {
   constructor({
@@ -87,8 +91,7 @@ class TFSFilter {
 
   asB64() {
     const uint8 = this.asUint8Array();
-    // Browser btoa is not available in node; use Buffer:
-    return Buffer.from(uint8).toString('base64');
+    return btoa(String.fromCharCode(...uint8));
   }
 }
 
@@ -100,7 +103,9 @@ function parseEnum(enumObj, str) {
   return enumObj[key];
 }
 
-async function getFlights(filter, currency = '') {
+// New integrated getFlights function that fetches and parses the flight results
+
+async function getFlights(filter, currency = '', mode = 'common') {
   const tfs = filter.asB64();
 
   const params = new URLSearchParams({
@@ -113,80 +118,82 @@ async function getFlights(filter, currency = '') {
   const url = `https://www.google.com/travel/flights?${params.toString()}`;
   console.log('Google Flights URL:', url);
 
-  const browser = await chromium.launch({ headless: true });
-  const page = await browser.newPage();
-
-  await page.goto(url, { waitUntil: 'domcontentloaded' });
-
-  // Wait for flights container (adjust timeout as needed)
-  await page.waitForSelector('div[jsname="IWWDBc"], div[jsname="YdtKid"]', { timeout: 15000 });
-
-  // Evaluate flight data inside the page context:
-  const results = await page.evaluate(() => {
-    function getTextSafe(el) {
-      return el ? el.textContent.trim() : '';
-    }
-
-    const flights = [];
-
-    const flightDivs = Array.from(document.querySelectorAll('div[jsname="IWWDBc"], div[jsname="YdtKid"]'));
-    flightDivs.forEach((fl, i) => {
-      const isBestFlight = i === 0;
-      const flightListItems = Array.from(fl.querySelectorAll('ul.Rk10dc li'));
-      // Mimic python slicing logic for last item exclusion except for first or dangerous flag
-      const itemsToParse = flightListItems.slice(0, -1);
-
-      itemsToParse.forEach(item => {
-        const name = getTextSafe(item.querySelector('div.sSHqwe.tPgKwe.ogfYpf span'));
-
-        const dpArNodes = item.querySelectorAll('span.mv1WYe div');
-        const departureTime = dpArNodes[0] ? dpArNodes[0].textContent.trim() : '';
-        const arrivalTime = dpArNodes[1] ? dpArNodes[1].textContent.trim() : '';
-
-        const timeAhead = getTextSafe(item.querySelector('span.bOzv6'));
-        const duration = getTextSafe(item.querySelector('li div.Ak5kof div'));
-        const stops = getTextSafe(item.querySelector('.BbR8Ec .ogfYpf'));
-        const delay = getTextSafe(item.querySelector('.GsCCve')) || null;
-        const priceRaw = getTextSafe(item.querySelector('.YMlIz.FpEdX')) || '0';
-
-        let stopsFmt;
-        if (stops === 'Nonstop') stopsFmt = 0;
-        else {
-          const m = stops.match(/^(\d+)/);
-          stopsFmt = m ? parseInt(m[1], 10) : 'Unknown';
-        }
-
-        flights.push({
-          is_best: isBestFlight,
-          name,
-          departure: departureTime,
-          arrival: arrivalTime,
-          arrival_time_ahead: timeAhead,
-          duration,
-          stops: stopsFmt,
-          delay,
-          price: priceRaw.replace(/,/g, ''),
-        });
-      });
-    });
-
-    const currentPriceEl = document.querySelector('span.gOatQ');
-    const currentPrice = currentPriceEl ? currentPriceEl.textContent.trim() : '';
-
-    return {
-      current_price: currentPrice,
-      flights,
-    };
+  // Fetch the flights page
+  const res = await fetch(url, {
+    headers: {
+      'Accept-Language': 'en-US,en;q=0.9',
+      // Add User-Agent or cookies if needed
+    },
   });
 
-  await browser.close();
+  if (!res.ok) {
+    throw new Error(`Failed to fetch flights: ${res.status} ${res.statusText}`);
+  }
 
-  if (!results.flights.length) {
+  const text = await res.text();
+  const $ = cheerio.load(text);
+  await fs.writeFile('output.txt', text, 'utf8');
+  const flights = [];
+
+  function getTextSafe(el) {
+    return el?.text()?.trim() ?? '';
+  }
+
+  $('div[jsname="IWWDBc"], div[jsname="YdtKid"]').each((i, fl) => {
+    const isBestFlight = i === 0;
+    const flightListItems = $(fl).find('ul.Rk10dc li').toArray();
+    const itemsToParse = flightListItems.slice(0, -1); // exclude last
+
+    itemsToParse.forEach(item => {
+      const el = $(item);
+      const name = getTextSafe(
+        el.find('div.sSHqwe.tPgKwe.ogfYpf span').first()
+      );
+
+      const dpArNodes = el.find('span.mv1WYe div').toArray();
+      const departureTime = dpArNodes[0] ? $(dpArNodes[0]).text().trim() : '';
+      const arrivalTime = dpArNodes[1] ? $(dpArNodes[1]).text().trim() : '';
+
+      const timeAhead = getTextSafe(el.find('span.bOzv6').first());
+      const duration = getTextSafe(el.find('li div.Ak5kof div').first());
+      const stops = getTextSafe(el.find('.BbR8Ec .ogfYpf').first());
+      const delay = getTextSafe(el.find('.GsCCve').first()) || null;
+      const priceRaw = getTextSafe(el.find('.YMlIz.FpEdX').first()) || '0';
+
+      let stopsFmt;
+      if (stops === 'Nonstop') stopsFmt = 0;
+      else {
+        const m = stops.match(/^(\d+)/);
+        stopsFmt = m ? parseInt(m[1], 10) : 'Unknown';
+      }
+
+      flights.push({
+        is_best: isBestFlight,
+        name,
+        departure: departureTime,
+        arrival: arrivalTime,
+        arrival_time_ahead: timeAhead,
+        duration,
+        stops: stopsFmt,
+        delay,
+        price: priceRaw.replace(/,/g, ''),
+      });
+    });
+  });
+
+  const currentPrice = getTextSafe($('span.gOatQ').first());
+
+  if (!flights.length) {
     throw new Error('No flights found');
   }
 
-  return results;
+  return {
+    current_price: currentPrice,
+    flights,
+  };
 }
+
+// Main example usage
 
 async function main() {
   const args = {
@@ -226,6 +233,7 @@ async function main() {
     max_stops: args.max_stops,
   });
 
+  // Log URL and fetch flight results
   const results = await getFlights(filter);
   console.log('Flight results:', results);
 }
