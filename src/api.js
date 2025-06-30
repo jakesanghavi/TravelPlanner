@@ -32,6 +32,6 @@ export const addOrUpdatePlace = async (formData) => {
 
   catch (error) {
     // console.error('Error:', error);
-    alert("Deck upload failed. Please try again later.")
+    alert("Location upload failed. Please try again later.")
   }
 }
