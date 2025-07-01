@@ -28,6 +28,8 @@ const {
     deleteCookieUser,
 } = require('../controllers/cookie-user-controller')
 
+const { getFlights } = require('../controllers/get_flights_controller')
+
 // GET places
 router.post("/places", getPlaces);
 
@@ -69,5 +71,7 @@ router.post('/users/userID/del/:id', deleteCookieUser)
 
 // GET a specific user by cookie ID
 router.get('/users/userID/:id', getCookieUser);
+
+router.post('/get_flights', getFlights)
 
 module.exports = router;

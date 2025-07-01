@@ -35,3 +35,20 @@ export const addOrUpdatePlace = async (formData) => {
     alert("Location upload failed. Please try again later.")
   }
 }
+
+export const fetchFlightsFromBackend = async(args) => {
+  const response = await fetch(`${baseURL}/get_flights`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ data: args }),
+  });
+
+  console.log(response)
+
+  if (!response.ok) {
+    throw new Error('Network response was not ok');
+  }
+
+  const result = await response.json();
+  return result.flights; // flights object from backend
+}

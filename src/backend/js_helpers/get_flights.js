@@ -188,18 +188,18 @@ async function getFlights(filter, currency = '') {
   return results;
 }
 
-async function main() {
-  const args = {
-    origin: 'JFK',
-    destination: 'LAX',
-    depart_date: '2025-07-02',
-    return_date: '2025-07-10',
-    type: 'economy',
-    adults: 2,
-    children: 1,
-    max_stops: 0,
-    trip: 'round-trip',
-  };
+async function retrieveFlights(args) {
+  // const args = {
+  //   origin: 'JFK',
+  //   destination: 'LAX',
+  //   depart_date: '2025-07-02',
+  //   return_date: '2025-07-10',
+  //   type: 'economy',
+  //   adults: 2,
+  //   children: 1,
+  //   max_stops: 0,
+  //   trip: 'round-trip',
+  // };
 
   const flightData = [
     new FlightData({
@@ -228,7 +228,12 @@ async function main() {
   });
 
   const results = await getFlights(filter);
-  console.log('Flight results:', results);
+  // console.log('Flight results:', results);
+  return results;
 }
 
-main().catch(console.error);
+// main().catch(console.error);
+
+module.exports = {
+  retrieveFlights
+}

@@ -10,6 +10,8 @@ import PlaceForm from "./components/PlaceForm";
 import ViewDetailsModal from "./components/ViewDetailsModal";
 import PlacesTreeView from "./components/PlacesTreeView";
 import Login from "./components/Login"
+import FlightSearchForm from "./components/FlightSearchForm"
+
 
 // Fix Leaflet's marker icon paths
 delete L.Icon.Default.prototype._getIconUrl;
@@ -36,6 +38,7 @@ function App() {
   const [file, setFile] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isViewModalOpen, setIsViewModalOpen] = useState(false);
+  const [isFlightModalOpen, setIsFlightModalOpen] = useState(false);
   const [selectedPlaceForView, setSelectedPlaceForView] = useState(null);
   const [errors, setErrors] = useState({});
   const [loggedInUser, setLoggedInUser] = useState(null);
@@ -314,17 +317,7 @@ function App() {
         )}
         <button
           onClick={() => {
-            setIsModalOpen(true);
-            setForm({
-              continent: "",
-              country: "",
-              city: "",
-              name: "",
-              lat: "",
-              lng: "",
-              notes: "",
-            });
-            setFile(null);
+            setIsFlightModalOpen(true);
           }}
           style={{
             width: "100%",
@@ -422,6 +415,10 @@ function App() {
         onClose={() => setIsViewModalOpen(false)}
         placeData={selectedPlaceForView}
       />
+
+      <Modal isOpen={isFlightModalOpen} onClose={() => setIsFlightModalOpen(false)}>
+        <FlightSearchForm></FlightSearchForm>
+      </Modal>
     </div>
   );
 }
