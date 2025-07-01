@@ -46,10 +46,10 @@ class Passengers {
       throw new Error('Too many passengers');
 
     this.pbArray = [
-      ...Array(adults).fill(encodePassenger.ADULT),
-      ...Array(children).fill(encodePassenger.CHILD),
-      ...Array(infants_in_seat).fill(encodePassenger.INFANT_IN_SEAT),
-      ...Array(infants_on_lap).fill(encodePassenger.INFANT_ON_LAP),
+      ...Array(adults).fill('ADULT'),
+      ...Array(children).fill('CHILD'),
+      ...Array(infants_in_seat).fill('INFANT_IN_SEAT'),
+      ...Array(infants_on_lap).fill('INFANT_ON_LAP'),
     ];
   }
 
@@ -192,10 +192,11 @@ async function main() {
   const args = {
     origin: 'JFK',
     destination: 'LAX',
-    depart_date: '2025-06-30',
+    depart_date: '2025-07-02',
     return_date: '2025-07-10',
     type: 'economy',
     adults: 2,
+    children: 1,
     max_stops: 0,
     trip: 'round-trip',
   };
@@ -213,7 +214,7 @@ async function main() {
     }),
   ];
 
-  const passengers = new Passengers({ adults: args.adults });
+  const passengers = new Passengers({ adults: args.adults, children: args.children });
 
   const tripEnum = parseEnum(encodeTrip, args.trip);
   const seatEnum = parseEnum(encodeSeat, args.type);
