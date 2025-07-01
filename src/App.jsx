@@ -1,5 +1,6 @@
 import { useEffect, useState, useCallback } from "react";
 import { getPlaces, addOrUpdatePlace } from "./api";
+import { emojiIcon, validateForm, extractMarkers } from './helpful_functions'
 import { MapContainer, TileLayer, Marker, Popup, useMap } from "react-leaflet";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
@@ -18,14 +19,6 @@ L.Icon.Default.mergeOptions({
   shadowUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png",
 });
 
-// Custom icon from the assets folder
-const emojiIcon = L.icon({
-  iconUrl: '/pin.png',
-  iconSize: [30, 30],
-  iconAnchor: [15, 30],
-});
-
-// Helper component to control map view
 function MapController({ position, zoom }) {
   const map = useMap();
 
@@ -46,6 +39,7 @@ function App() {
   const [selectedPlaceForView, setSelectedPlaceForView] = useState(null);
   const [errors, setErrors] = useState({});
   const [loggedInUser, setLoggedInUser] = useState(null);
+
   const generateUserID = () => {
     return 'user_' + Math.random().toString(36).substring(2, 15);
   };
@@ -60,6 +54,7 @@ function App() {
 
     return userID;
   }, []);
+
 
   useEffect(() => {
     const fetchData = async () => {
@@ -143,35 +138,6 @@ function App() {
     notes: ""
   });
 
-  const validateForm = () => {
-    const errors = {};
-
-    if (!form.continent || form.continent.trim().length < 1)
-      errors.continent = 'Continent is required';
-
-    if (!form.country || form.country.trim().length < 1)
-      errors.country = 'Country is required';
-
-    if (!form.city || form.city.trim().length < 1)
-      errors.city = 'City is required';
-
-    if (!form.name || form.name.trim().length < 1)
-      errors.name = 'Place name is required';
-
-    if (!form.lat || isNaN(parseFloat(form.lat)))
-      errors.lat = 'Latitude must be a valid number';
-
-    if (!form.lng || isNaN(parseFloat(form.lng)))
-      errors.lng = 'Longitude must be a valid number';
-
-    if (!file)
-      errors.image = 'Please upload an image';
-
-    setErrors(errors);
-
-    return Object.keys(errors).length === 0;
-  };
-
   const fetchPlaces = () => {
     getPlaces(loggedInUser.username)
       .then((res) => {
@@ -216,7 +182,7 @@ function App() {
       return
     }
 
-    const valid = validateForm();
+    const valid = validateForm(form, file);
     if (!valid) {
       return;
     }
@@ -287,33 +253,7 @@ function App() {
     // setLoggedInUser({ email: user_resp.email_address, username: user_resp.username });
   };
 
-
-
-  const extractMarkers = () => {
-    const markers = [];
-    for (const continent in places) {
-      for (const country in places[continent]) {
-        for (const city in places[continent][country]) {
-          for (const name in places[continent][country][city]) {
-            const data = places[continent][country][city][name];
-            if (data?.lat && (data?.lng || data?.long)) {
-              markers.push({
-                position: [data.lat, data.lng ?? data.long],
-                name: data.name,
-                city,
-                country,
-                continent,
-                description: data.notes || "",
-              });
-            }
-          }
-        }
-      }
-    }
-    return markers;
-  };
-
-  const markers = extractMarkers();
+  const markers = extractMarkers(places);
 
   const openViewDetailsModal = (markerData) => {
     setSelectedPlaceForView(markerData);
@@ -372,6 +312,34 @@ function App() {
             Add Place
           </button>
         )}
+        <button
+          onClick={() => {
+            setIsModalOpen(true);
+            setForm({
+              continent: "",
+              country: "",
+              city: "",
+              name: "",
+              lat: "",
+              lng: "",
+              notes: "",
+            });
+            setFile(null);
+          }}
+          style={{
+            width: "100%",
+            padding: "10px",
+            marginBottom: "15px",
+            background: "#007bff",
+            color: "white",
+            border: "none",
+            borderRadius: "5px",
+            cursor: "pointer",
+            boxShadow: "0 2px 5px rgba(0,0,0,0.2)",
+          }}
+        >
+          Plan Flight
+        </button>
         <PlacesTreeView data={places} onSelectPlace={onSelectPlaceFromTree} />
       </div>
 
