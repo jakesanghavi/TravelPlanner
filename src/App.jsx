@@ -416,7 +416,7 @@ function App() {
         placeData={selectedPlaceForView}
       />
 
-      <Modal isOpen={isFlightModalOpen} onClose={() => setIsFlightModalOpen(false)}>
+      <Modal isOpen={isFlightModalOpen} onClose={() => setIsFlightModalOpen(false)} style={{ maxWidth: '750px' }}>
         <FlightSearchForm></FlightSearchForm>
       </Modal>
     </div>

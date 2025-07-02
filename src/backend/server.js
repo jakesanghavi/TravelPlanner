@@ -28,7 +28,7 @@ try {
 
 // CORS options: explicitly allow frontend origin
 const corsOptions = {
-  origin: 'http://localhost:5173', // your React dev server URL
+  origin: process.env.ORIGIN, // your React dev server URL
   methods: ['GET', 'POST'],
   allowedHeaders: ['Content-Type', 'Authorization', 'Accept'],
 };

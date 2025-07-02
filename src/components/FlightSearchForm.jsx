@@ -7,11 +7,11 @@ const FlightSearchForm = () => {
     destination: '',
     depart_date: '',
     return_date: '',
-    type: '',
-    adults: 0,
+    type: 'economy',
+    adults: 1,
     children: 0,
     max_stops: 0,
-    trip: '',
+    trip: 'round-trip',
   });
 
   const [results, setResults] = useState(null);
@@ -59,6 +59,23 @@ const FlightSearchForm = () => {
     <>
       <form onSubmit={handleSubmit} style={{ color: 'black' }}>
         {/* Inputs */}
+        <div>
+          <label>
+            Trip:
+            <select
+              name="trip"
+              value={args.trip}
+              onChange={handleChange}
+              style={{ color: 'black' }}
+              required
+            >
+              <option value="">Select Trip</option>
+              <option value="one-way">One Way</option>
+              <option value="round-trip">Round Trip</option>
+              <option value="multi-city">Multi-City</option>
+            </select>
+          </label>
+        </div>
         <div>
           <label>
             Origin:
@@ -179,23 +196,6 @@ const FlightSearchForm = () => {
                   {stop}
                 </option>
               ))}
-            </select>
-          </label>
-        </div>
-        <div>
-          <label>
-            Trip:
-            <select
-              name="trip"
-              value={args.trip}
-              onChange={handleChange}
-              style={{ color: 'black' }}
-              required
-            >
-              <option value="">Select Trip</option>
-              <option value="one-way">One Way</option>
-              <option value="round-trip">Round Trip</option>
-              <option value="multi-city">Multi-City</option>
             </select>
           </label>
         </div>
