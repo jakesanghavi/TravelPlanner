@@ -152,10 +152,11 @@ function PlacesTreeView({ data, onSelectPlace }) {
                                     onClick={() =>
                                       handleClickPlace({
                                         position: [placeData.lat, placeData.lng ?? placeData.long],
-                                        name: placeData.name,
+                                        name: name,
                                         city,
                                         country,
                                         continent,
+                                        imageUrl: placeData.imageUrl,
                                         description: placeData.notes || "",
                                       })
                                     }

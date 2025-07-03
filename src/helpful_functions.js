@@ -43,10 +43,11 @@ export const validateForm = (form, file) => {
             if (data?.lat && (data?.lng || data?.long)) {
               markers.push({
                 position: [data.lat, data.lng ?? data.long],
-                name: data.name,
+                name: name,
                 city,
                 country,
                 continent,
+                imageUrl: data.imageUrl,
                 description: data.notes || "",
               });
             }

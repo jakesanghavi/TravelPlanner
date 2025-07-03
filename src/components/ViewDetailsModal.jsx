@@ -5,16 +5,18 @@ import '../component_styles/modal.css';
 const ViewDetailsModal = ({ isOpen, onClose, placeData }) => {
   if (!placeData) return null;
 
+  console.log(placeData)
+
   // Show info about the place
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
       <h2 className="text-xl font-bold mb-4 text-center">Place Details</h2>
       <div className="uneditable-place-data space-y-2">
+        <img src={placeData.imageUrl}></img>
+        <p><strong>Name:</strong> {placeData.name}</p>
         <p><strong>Continent:</strong> {placeData.continent}</p>
         <p><strong>Country:</strong> {placeData.country}</p>
         <p><strong>City:</strong> {placeData.city}</p>
-        <p><strong>Latitude:</strong> {placeData.position[0]}</p>
-        <p><strong>Longitude:</strong> {placeData.position[1]}</p>
         {placeData.description && <p><strong>Notes:</strong> {placeData.description}</p>}
       </div>
       <div className="flex justify-center mt-6">
