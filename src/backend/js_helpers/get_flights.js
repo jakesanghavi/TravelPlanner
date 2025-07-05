@@ -111,7 +111,6 @@ async function getFlights(filter, currency = '') {
   });
 
   const url = `https://www.google.com/travel/flights?${params.toString()}`;
-  console.log('Google Flights URL:', url);
 
   const browser = await chromium.launch({ headless: true });
   const page = await browser.newPage();
@@ -228,7 +227,6 @@ async function retrieveFlights(args) {
   });
 
   const results = await getFlights(filter);
-  // console.log('Flight results:', results);
   return results;
 }
 

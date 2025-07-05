@@ -221,7 +221,7 @@ const Login = ({ onLoginSuccess, uid, openLoginModal }) => {
       }
     }
     catch (error) {
-        console.log(error)
+        // Do nothing
     }
   }
 
@@ -295,7 +295,7 @@ const Login = ({ onLoginSuccess, uid, openLoginModal }) => {
         closeModal();
       }
     } catch (error) {
-      console.log(error)
+      // Do nothing
     }
   }, [loginModal, onLoginSuccess, uid]);
 
@@ -325,7 +325,6 @@ const Login = ({ onLoginSuccess, uid, openLoginModal }) => {
       if (response.ok) {
         alert('Password reset email sent.');
       } else {
-        console.log(response)
         alert('Failed to send password reset email.');
       }
     } catch (error) {

@@ -45,7 +45,6 @@ const FlightSearchForm = () => {
     try {
       // Use fetchFlightsFromBackend here and await it
       const flightResults = await fetchFlightsFromBackend(args);
-      console.log(flightResults.flights)
       setResults(flightResults);
     } catch (err) {
       setError('Failed to fetch flight data.');

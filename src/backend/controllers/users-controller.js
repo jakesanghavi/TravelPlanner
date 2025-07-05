@@ -65,8 +65,6 @@ const getUserByUsername = async (request, response) => {
 const postUser = async (request, response) => {
   const { email_address, username, password } = request.body;
 
-  console.log(request.body)
-
   const generateRandomPassword = (minLength, maxLength) => {
     const length = Math.floor(Math.random() * (maxLength - minLength + 1)) + minLength;
     const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*_+?';

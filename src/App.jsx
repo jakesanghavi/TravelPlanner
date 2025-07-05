@@ -142,18 +142,14 @@ function App() {
   });
 
   const fetchPlaces = () => {
-    getPlaces(loggedInUser.username)
-      .then((res) => {
-        setPlaces(res);
-        console.log("Fetched places successfully:", res);
-      })
-      .catch((err) => {
-        console.error("Failed to fetch places:", err);
-      })
-      .finally(() => {
-        console.log("Fetch attempt completed.");
-      });
-  };
+  getPlaces(loggedInUser.username)
+    .then((res) => {
+      setPlaces(res);
+    })
+    .catch((err) => {
+      console.error("Failed to fetch places:", err);
+    });
+};
 
   useEffect(() => {
     if (loggedInUser) {
@@ -367,8 +363,8 @@ function App() {
             <Marker key={idx} position={m.position} icon={emojiIcon}>
               <Popup>
                 <div>
-                  <strong>{m.city}</strong><br />
-                  {m.country}, {m.continent}
+                  <strong>{m.name}</strong><br />
+                  {m.city}, {m.country}, {m.continent}
                   {m.description && <><br />Notes: {m.description}</>}
                   <br />
                   <button

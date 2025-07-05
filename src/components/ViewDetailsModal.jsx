@@ -5,8 +5,6 @@ import '../component_styles/modal.css';
 const ViewDetailsModal = ({ isOpen, onClose, placeData }) => {
   if (!placeData) return null;
 
-  console.log(placeData)
-
   // Show info about the place
   return (
     <Modal isOpen={isOpen} onClose={onClose}>

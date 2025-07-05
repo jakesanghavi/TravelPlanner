@@ -39,6 +39,7 @@ function PlacesTreeView({ data, onSelectPlace }) {
                 continent,
                 country,
                 city,
+                imageUrl: placeData.imageUrl,
                 description: placeData.notes || "",
                 position: [placeData.lat, placeData.lng ?? placeData.long],
               });

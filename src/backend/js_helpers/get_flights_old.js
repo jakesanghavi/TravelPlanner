@@ -116,7 +116,6 @@ async function getFlights(filter, currency = '', mode = 'common') {
   });
 
   const url = `https://www.google.com/travel/flights?${params.toString()}`;
-  console.log('Google Flights URL:', url);
 
   // Fetch the flights page
   const res = await fetch(url, {
@@ -235,7 +234,6 @@ async function main() {
 
   // Log URL and fetch flight results
   const results = await getFlights(filter);
-  console.log('Flight results:', results);
 }
 
 main().catch(console.error);
