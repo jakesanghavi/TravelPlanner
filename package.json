@@ -6,8 +6,7 @@
     "dev": "vite",
     "build": "vite build",
     "lint": "eslint .",
-    "preview": "vite preview",
-    "postinstall": "npx playwright install"
+    "preview": "vite preview"
   },
   "dependencies": {
     "axios": "^1.10.0",
