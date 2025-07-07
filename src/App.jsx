@@ -276,7 +276,7 @@ function App() {
         <Login onLoginSuccess={handleLoginSuccess} uid={getUserID} openLoginModal={openLoginModal} />
         <div id="signIn">
           {!loggedInUser?.email ? (
-            <button onClick={openLoginModal}>Sign In</button>
+            <button onClick={openLoginModal}>Sign In to Start Planning!</button>
           ) : (
             <span>{loggedInUser.username}</span>
           )}
