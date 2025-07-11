@@ -16,7 +16,7 @@ const openLoginModal = (email) => {
     document.getElementById('signUpEmail').value = email;
 };
 
-function LeftBar({setIsModalOpen, setIsFlightModalOpen, setSelectedPlaceForView, setIsViewModalOpen, places, handleLoginSuccess, getUserID, loggedInUser}) {
+function LeftBar({setIsModalOpen, setIsFlightModalOpen, setSelectedPlaceForView, setIsViewModalOpen, places, handleLoginSuccess, getUserID, loggedInUser, setForm, setFile}) {
 
     const onSelectPlaceFromTree = (placeData) => {
         setSelectedPlaceForView(placeData);

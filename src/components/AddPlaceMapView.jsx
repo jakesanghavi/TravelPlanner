@@ -1,6 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { addOrUpdatePlace } from "../api";
-import { emojiIcon, validateForm, extractMarkers } from '../helpful_functions'
+import { emojiIcon, extractMarkers } from '../helpful_functions'
 import { MapContainer, TileLayer, Marker, Popup, useMap } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import "../index.css";
@@ -62,90 +61,8 @@ function MapController({ position, zoom }) {
     return null;
 }
 
-function AddPlaceMapView({loggedInUser, places, isModalOpen, setIsModalOpen, isFlightModalOpen, setIsFlightModalOpen, selectedPlaceForView, setSelectedPlaceForView, isViewModalOpen, setIsViewModalOpen}) {
-    const [file, setFile] = useState(null);
+function AddPlaceMapView({loggedInUser, places, isModalOpen, setIsModalOpen, isFlightModalOpen, setIsFlightModalOpen, selectedPlaceForView, setSelectedPlaceForView, isViewModalOpen, setIsViewModalOpen, handleFormChange, handleSubmit, handleFileChange, file, form}) {
     const [errors, setErrors] = useState({});
-
-    const [form, setForm] = useState({
-        continent: "",
-        country: "",
-        city: "",
-        name: "",
-        lat: "",
-        lng: "",
-        notes: ""
-    });
-
-
-    const handleFormChange = (field, value) => {
-        setForm((prevForm) => ({
-            ...prevForm,
-            [field]: value,
-        }));
-    };
-
-    const handleFileChange = (event) => {
-        const selectedFile = event.target.files[0];
-        if (selectedFile && selectedFile.type.startsWith('image/')) {
-            setFile(selectedFile);
-        } else {
-            alert('Please upload a valid image file.');
-        }
-    };
-
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-
-        if (!loggedInUser) {
-            return
-        }
-
-        const valid = validateForm(form, file);
-        if (!valid) {
-            return;
-        }
-
-        const lat = parseFloat(form.lat);
-        const lng = parseFloat(form.lng);
-
-        if (isNaN(lat) || isNaN(lng)) {
-            alert("Latitude and Longitude must be valid numbers.");
-            return;
-        }
-
-        const formData = new FormData();
-        formData.append('image', file);
-        formData.append("username", loggedInUser.username)
-        formData.append("continent", form.continent);
-        formData.append("country", form.country);
-        formData.append("city", form.city);
-        formData.append("name", form.name);
-        formData.append("lat", lat);
-        formData.append("lng", lng);
-        formData.append("notes", form.notes || "");
-
-        try {
-            await addOrUpdatePlace(formData);
-
-            setForm({
-                continent: "",
-                country: "",
-                city: "",
-                name: "",
-                lat: "",
-                lng: "",
-                notes: "",
-                imageFile: null,
-            });
-            setFile(null);
-
-            fetchPlaces();
-            setIsModalOpen(false);
-        } catch (err) {
-            alert("Failed to submit data.");
-            console.error(err);
-        }
-    };
 
     const markers = extractMarkers(places);
 
