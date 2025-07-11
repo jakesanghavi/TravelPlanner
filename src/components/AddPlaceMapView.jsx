@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { addOrUpdatePlace } from "../api";
 import { emojiIcon, validateForm, extractMarkers } from '../helpful_functions'
 import { MapContainer, TileLayer, Marker, Popup, useMap } from "react-leaflet";
@@ -7,11 +7,51 @@ import "../index.css";
 import Modal from "../components/Modal";
 import PlaceForm from "../components/PlaceForm";
 import ViewDetailsModal from "../components/ViewDetailsModal";
-import FlightSearchForm from "../components/FlightSearchForm"
+import FlightSearchForm from "../components/FlightSearchForm";
+import "leaflet-draw";
+import "leaflet-draw/dist/leaflet.draw.css";
 
 
 function MapController({ position, zoom }) {
     const map = useMap();
+    const drawnItemsRef = useRef(null);
+    const drawControlRef = useRef(null);
+
+    useEffect(() => {
+        if (!drawnItemsRef.current) {
+            // Only run this once
+            const drawnItems = new L.FeatureGroup();
+            drawnItemsRef.current = drawnItems;
+            map.addLayer(drawnItems);
+
+            const drawControl = new L.Control.Draw({
+                draw: {
+                    polygon: false,
+                    polyline: false,
+                    rectangle: false,
+                    marker: false,
+                    circlemarker: false,
+                    circle: {
+                        shapeOptions: {
+                            color: "#f59e0b",
+                        },
+                    },
+                },
+                edit: {
+                    featureGroup: drawnItems,
+                },
+            });
+
+            drawControlRef.current = drawControl;
+            map.addControl(drawControl);
+
+            map.on(L.Draw.Event.CREATED, (e) => {
+                const layer = e.layer;
+                drawnItems.clearLayers(); // Optional: Only allow one shape
+                drawnItems.addLayer(layer);
+            });
+        }
+    }, [map]);
 
     useEffect(() => {
         if (position) {
