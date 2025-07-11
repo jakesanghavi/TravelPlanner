@@ -16,7 +16,7 @@ const openLoginModal = (email) => {
     document.getElementById('signUpEmail').value = email;
 };
 
-function LeftBar({setIsModalOpen, setIsFlightModalOpen, setSelectedPlaceForView, setIsViewModalOpen, places, handleLoginSuccess, getUserID, loggedInUser, setForm, setFile}) {
+function LeftBar({setSelectedPlaceForView, setIsViewModalOpen, places, handleLoginSuccess, getUserID, loggedInUser}) {
 
     const onSelectPlaceFromTree = (placeData) => {
         setSelectedPlaceForView(placeData);
@@ -33,54 +33,6 @@ function LeftBar({setIsModalOpen, setIsFlightModalOpen, setSelectedPlaceForView,
                     <span>{loggedInUser.username}</span>
                 )}
             </div>
-            {loggedInUser?.email && (
-                <button
-                    onClick={() => {
-                        setIsModalOpen(true);
-                        setForm({
-                            continent: "",
-                            country: "",
-                            city: "",
-                            name: "",
-                            lat: "",
-                            lng: "",
-                            notes: "",
-                        });
-                        setFile(null);
-                    }}
-                    style={{
-                        width: "100%",
-                        padding: "10px",
-                        marginBottom: "15px",
-                        background: "#007bff",
-                        color: "white",
-                        border: "none",
-                        borderRadius: "5px",
-                        cursor: "pointer",
-                        boxShadow: "0 2px 5px rgba(0,0,0,0.2)",
-                    }}
-                >
-                    Add Place
-                </button>
-            )}
-            <button
-                onClick={() => {
-                    setIsFlightModalOpen(true);
-                }}
-                style={{
-                    width: "100%",
-                    padding: "10px",
-                    marginBottom: "15px",
-                    background: "#007bff",
-                    color: "white",
-                    border: "none",
-                    borderRadius: "5px",
-                    cursor: "pointer",
-                    boxShadow: "0 2px 5px rgba(0,0,0,0.2)",
-                }}
-            >
-                Plan Flight
-            </button>
             <PlacesTreeView data={places} onSelectPlace={onSelectPlaceFromTree} />
         </div>
     );

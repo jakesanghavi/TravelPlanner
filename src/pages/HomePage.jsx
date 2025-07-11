@@ -239,7 +239,7 @@ function HomePage() {
 
     return (
         <div style={{ display: "flex", height: "100vh", width: "100vw" }}>
-            <LeftBar setIsModalOpen={setIsModalOpen} setIsFlightModalOpen={setIsFlightModalOpen} setSelectedPlaceForView={setSelectedPlaceForView} setIsViewModalOpen={setIsViewModalOpen} places={places} handleLoginSuccess={handleLoginSuccess} getUserID={getUserID} loggedInUser={loggedInUser} setForm={setForm} setFile={setFile}></LeftBar>
+            <LeftBar setSelectedPlaceForView={setSelectedPlaceForView} setIsViewModalOpen={setIsViewModalOpen} places={places} handleLoginSuccess={handleLoginSuccess} getUserID={getUserID} loggedInUser={loggedInUser}></LeftBar>
             <AddPlaceMapView loggedInUser={loggedInUser} places={places} isModalOpen={isModalOpen} setIsModalOpen={setIsModalOpen} isFlightModalOpen={isFlightModalOpen} setIsFlightModalOpen={setIsFlightModalOpen} selectedPlaceForView={selectedPlaceForView} setSelectedPlaceForView={setSelectedPlaceForView} isViewModalOpen={isViewModalOpen} setIsViewModalOpen={setIsViewModalOpen} handleFormChange={handleFormChange} handleSubmit={handleSubmit} handleFileChange={handleFileChange} file={file} form={form}></AddPlaceMapView>
         </div>
     );

@@ -3,12 +3,14 @@ import { emojiIcon, extractMarkers } from '../helpful_functions'
 import { MapContainer, TileLayer, Marker, Popup, useMap } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import "../index.css";
+import "leaflet-draw";
+import "leaflet-draw/dist/leaflet.draw.css";
 import Modal from "../components/Modal";
 import PlaceForm from "../components/PlaceForm";
 import ViewDetailsModal from "../components/ViewDetailsModal";
 import FlightSearchForm from "../components/FlightSearchForm";
-import "leaflet-draw";
-import "leaflet-draw/dist/leaflet.draw.css";
+import FloatingActionMenu from "../components/FloatingActionMenu";
+
 
 
 function MapController({ position, zoom }) {
@@ -18,36 +20,24 @@ function MapController({ position, zoom }) {
 
     useEffect(() => {
         if (!drawnItemsRef.current) {
-            // Only run this once
             const drawnItems = new L.FeatureGroup();
             drawnItemsRef.current = drawnItems;
             map.addLayer(drawnItems);
 
-            const drawControl = new L.Control.Draw({
-                draw: {
-                    polygon: false,
-                    polyline: false,
-                    rectangle: false,
-                    marker: false,
-                    circlemarker: false,
-                    circle: {
-                        shapeOptions: {
-                            color: "#f59e0b",
-                        },
-                    },
-                },
-                edit: {
-                    featureGroup: drawnItems,
+            // Circle handler only (manual trigger)
+            const circleHandler = new L.Draw.Circle(map, {
+                shapeOptions: {
+                    color: "#f59e0b",
+                    weight: 2,
                 },
             });
 
-            drawControlRef.current = drawControl;
-            map.addControl(drawControl);
+            // Expose globally so button can trigger it
+            window.leafletDrawCircleHandler = circleHandler;
 
             map.on(L.Draw.Event.CREATED, (e) => {
-                const layer = e.layer;
-                drawnItems.clearLayers(); // Optional: Only allow one shape
-                drawnItems.addLayer(layer);
+                drawnItems.clearLayers(); // Optional: only one shape
+                drawnItems.addLayer(e.layer);
             });
         }
     }, [map]);
@@ -61,7 +51,7 @@ function MapController({ position, zoom }) {
     return null;
 }
 
-function AddPlaceMapView({loggedInUser, places, isModalOpen, setIsModalOpen, isFlightModalOpen, setIsFlightModalOpen, selectedPlaceForView, setSelectedPlaceForView, isViewModalOpen, setIsViewModalOpen, handleFormChange, handleSubmit, handleFileChange, file, form}) {
+function AddPlaceMapView({ places, isModalOpen, setIsModalOpen, isFlightModalOpen, setIsFlightModalOpen, selectedPlaceForView, setSelectedPlaceForView, isViewModalOpen, setIsViewModalOpen, handleFormChange, handleSubmit, handleFileChange, file, form, loggedInUser }) {
     const [errors, setErrors] = useState({});
 
     const markers = extractMarkers(places);
@@ -133,6 +123,32 @@ function AddPlaceMapView({loggedInUser, places, isModalOpen, setIsModalOpen, isF
                         position={selectedPlaceForView ? selectedPlaceForView.position : null}
                         zoom={6}
                     />
+                    {loggedInUser?.email && (
+                        <FloatingActionMenu
+                            onAddPlaceClick={() => {
+                                setIsModalOpen(true);
+                                setForm({
+                                    continent: "",
+                                    country: "",
+                                    city: "",
+                                    name: "",
+                                    lat: "",
+                                    lng: "",
+                                    notes: "",
+                                });
+                                setFile(null);
+                            }}
+                            onDrawCircleClick={() => {
+                                if (window.leafletDrawCircleHandler) {
+                                    window.leafletDrawCircleHandler.enable();
+                                }
+                            }}
+                            onPlanFlightClick={() => {
+                                setIsFlightModalOpen(true);
+                            }}
+                        />
+                    )}
+
                 </MapContainer>
             </div>
 
