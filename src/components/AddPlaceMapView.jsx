@@ -12,34 +12,11 @@ import FlightSearchForm from "../components/FlightSearchForm";
 import FloatingActionMenu from "../components/FloatingActionMenu";
 
 
-
 function MapController({ position, zoom }) {
     const map = useMap();
-    const drawnItemsRef = useRef(null);
-    const drawControlRef = useRef(null);
 
     useEffect(() => {
-        if (!drawnItemsRef.current) {
-            const drawnItems = new L.FeatureGroup();
-            drawnItemsRef.current = drawnItems;
-            map.addLayer(drawnItems);
-
-            // Circle handler only (manual trigger)
-            const circleHandler = new L.Draw.Circle(map, {
-                shapeOptions: {
-                    color: "#f59e0b",
-                    weight: 2,
-                },
-            });
-
-            // Expose globally so button can trigger it
-            window.leafletDrawCircleHandler = circleHandler;
-
-            map.on(L.Draw.Event.CREATED, (e) => {
-                drawnItems.clearLayers(); // Optional: only one shape
-                drawnItems.addLayer(e.layer);
-            });
-        }
+        window.map = map;
     }, [map]);
 
     useEffect(() => {
@@ -139,10 +116,61 @@ function AddPlaceMapView({ places, isModalOpen, setIsModalOpen, isFlightModalOpe
                                 setFile(null);
                             }}
                             onDrawCircleClick={() => {
-                                if (window.leafletDrawCircleHandler) {
-                                    window.leafletDrawCircleHandler.enable();
-                                }
+                                if (!window.map) return;
+
+                                let polyline;
+                                let polygon;
+                                const latlngs = [];
+                                let drawing = false;
+
+                                const onMouseDown = (e) => {
+                                    drawing = true;
+                                    latlngs.length = 0;
+                                    latlngs.push(e.latlng);
+
+                                    // disable map interactions while drawing
+                                    window.map.dragging.disable();
+                                    window.map.doubleClickZoom.disable();
+
+                                    polyline = L.polyline(latlngs, { color: 'red' }).addTo(window.map);
+                                };
+
+                                const onMouseMove = (e) => {
+                                    if (!drawing) return;
+                                    latlngs.push(e.latlng);
+                                    polyline.setLatLngs(latlngs);
+                                };
+
+                                const onMouseUp = () => {
+                                    drawing = false;
+
+                                    if (polyline) {
+                                        window.map.removeLayer(polyline);
+                                    }
+
+                                    // Circle up polygon
+                                    polygon = L.polygon(latlngs, { color: 'red', fillOpacity: 0.3 }).addTo(window.map);
+
+                                    // Store polys so we can check if any lat/long is within
+                                    window.drawnPolygons = window.drawnPolygons || [];
+                                    window.drawnPolygons.push(polygon);
+
+                                    // re-enable map interactions
+                                    window.map.dragging.enable();
+                                    window.map.doubleClickZoom.enable();
+
+                                    // cleanup listeners
+                                    window.map.off('mousedown', onMouseDown);
+                                    window.map.off('mousemove', onMouseMove);
+                                    window.map.off('mouseup', onMouseUp);
+                                };
+
+                                window.map.on('mousedown', onMouseDown);
+                                window.map.on('mousemove', onMouseMove);
+                                window.map.on('mouseup', onMouseUp);
                             }}
+
+
                             onPlanFlightClick={() => {
                                 setIsFlightModalOpen(true);
                             }}
