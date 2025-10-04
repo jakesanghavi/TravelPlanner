@@ -1,13 +1,14 @@
-const fetch = require('node-fetch');
-const cheerio = require('cheerio');
-const fs = require('fs').promises;
+import fetch from "node-fetch";
+import cheerio from "cheerio";
+import fs from 'fs/promises';
 
-const {
+
+import {
   encodeInfo,
   encodeSeat,
   encodeTrip,
   encodePassenger,
-} = require('./flights_proto.js');
+} from "./flights_proto.js";
 
 // Your classes, unchanged except minor fixes for integration
 

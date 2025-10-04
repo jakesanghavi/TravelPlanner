@@ -1,9 +1,9 @@
-const sharp = require("sharp");
-const os = require("os");
-const path = require("path");
-const fs = require("fs/promises");
-const cloudinary = require("cloudinary").v2;
-db = require('../firebase-admin');
+import sharp from "sharp";
+import os from "os";
+import path from "path";
+import fs from "fs/promises";
+import { v2 as cloudinary } from "cloudinary";
+import db from "../firebase-admin.js";
 
 // Config from the .env file
 cloudinary.config({
@@ -159,7 +159,7 @@ const postPlace = async (req, res) => {
     }
 };
 
-module.exports = {
+export {
     getPlaces,
     postPlace,
 };

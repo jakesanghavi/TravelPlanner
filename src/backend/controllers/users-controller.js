@@ -1,7 +1,6 @@
-const nodemailer = require('nodemailer');
-const crypto = require('crypto');
-db = require('../firebase-admin');
-
+import nodemailer from "nodemailer";
+import crypto from "crypto";
+import db from "../firebase-admin.js";
 
 const transporter = nodemailer.createTransport({
   service: 'Gmail',
@@ -287,8 +286,7 @@ const resetPassword = async (request, response) => {
   }
 };
 
-module.exports = {
-  getUserByUsername,
+export { getUserByUsername,
   getUserByEmail,
   postUser,
   updateUser,
@@ -296,5 +294,4 @@ module.exports = {
   getOneUser,
   loginUserWithPassword,
   forgotPassword,
-  resetPassword
-}
+  resetPassword };

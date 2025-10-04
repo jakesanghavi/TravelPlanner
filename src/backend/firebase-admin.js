@@ -1,6 +1,6 @@
 // backend/firebase-admin.js
-const admin = require("firebase-admin");
-const dotenv = require("dotenv");
+import admin from "firebase-admin";
+import dotenv from "dotenv";
 dotenv.config();
 
 // All firebase params
@@ -21,4 +21,4 @@ admin.initializeApp({
 });
 
 const db = admin.database();
-module.exports = db;
+export default db;

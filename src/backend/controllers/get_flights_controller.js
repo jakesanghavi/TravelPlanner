@@ -1,5 +1,5 @@
-db = require('../firebase-admin');
-const { retrieveFlights } = require('../js_helpers/get_flights')
+import db from "../firebase-admin.js";
+import { retrieveFlights } from "../js_helpers/get_flights.js";
 
 const getFlights = async (req, res) => {
   const data = req.body.data;
@@ -13,4 +13,4 @@ const getFlights = async (req, res) => {
   }
 };
 
-module.exports = { getFlights };
+export { getFlights }

@@ -8,9 +8,9 @@ process.on('unhandledRejection', err => {
   process.exit(1);
 });
 
-const express = require("express");
-const cors = require('cors');
-const dotenv = require("dotenv");
+import express from "express";
+import cors from "cors";
+import dotenv from "dotenv";
 dotenv.config();
 
 const app = express();
@@ -19,7 +19,7 @@ const port = process.env.PORT || 5050;
 // Load Firebase Admin SDK
 let db;
 try {
-  db = require('./firebase-admin');
+  db = await import('./firebase-admin.js');
   console.log('Firebase Admin SDK loaded successfully!');
 } catch (err) {
   console.error("Failed to load Firebase Admin SDK:", err);
@@ -36,7 +36,7 @@ const corsOptions = {
 app.use(cors(corsOptions));    // use CORS middleware with options
 app.use(express.json());       // parse JSON body
 
-const routes = require('./routes/api-router');
+import routes from './routes/api-router.js';
 app.use('/', routes);
 
 app.listen(port, () => {

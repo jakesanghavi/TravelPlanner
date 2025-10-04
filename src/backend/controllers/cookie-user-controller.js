@@ -1,4 +1,4 @@
-db = require('../firebase-admin');
+import db from "../firebase-admin.js";
 
 const getCookieUser = async (request, response) => {
   const id = request.params.id;
@@ -76,9 +76,5 @@ const deleteCookieUser = async (request, response) => {
   }
 };
 
-module.exports = {
-  getCookieUser,
-  postCookieUser,
-  updateCookieUser,
-  deleteCookieUser
-}
+export { getCookieUser, postCookieUser, updateCookieUser, deleteCookieUser };
+

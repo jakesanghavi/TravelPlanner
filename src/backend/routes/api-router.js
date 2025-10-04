@@ -1,5 +1,5 @@
-const express = require('express')
-const multer = require('multer')
+import express from 'express';
+import multer from 'multer';
 
 // Configure multer storage
 const storage = multer.memoryStorage();
@@ -7,28 +7,28 @@ const upload = multer({ storage: storage });
 
 const router = express.Router();
 
-const { getPlaces, postPlace } = require("../controllers/add-place-controller");
+import { getPlaces, postPlace } from '../controllers/add-place-controller.js';
 
-const {
+import {
     getUserByUsername,
     getUserByEmail,
-    postUser ,
+    postUser,
     updateUser,
     getUsers,
     getOneUser,
     loginUserWithPassword,
     forgotPassword,
     resetPassword
-} = require('../controllers/users-controller')
+} from '../controllers/users-controller.js';
 
-const {
+import {
     getCookieUser,
     postCookieUser,
     updateCookieUser,
     deleteCookieUser,
-} = require('../controllers/cookie-user-controller')
+} from '../controllers/cookie-user-controller.js';
 
-const { getFlights } = require('../controllers/get_flights_controller')
+import { getFlights } from '../controllers/get_flights_controller.js';
 
 // GET places
 router.post("/places", getPlaces);
@@ -74,4 +74,4 @@ router.get('/users/userID/:id', getCookieUser);
 
 router.post('/get_flights', getFlights)
 
-module.exports = router;
+export default router;

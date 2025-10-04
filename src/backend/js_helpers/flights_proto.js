@@ -784,7 +784,7 @@ function writeVarint64ZigZag(bb, value) {
   });
 }
 
-module.exports = {
+export {
   encodeSeat,
   decodeSeat,
   encodeTrip,

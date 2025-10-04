@@ -1,11 +1,12 @@
-const { chromium } = require('playwright');
+import { chromium } from "playwright";
 
-const {
+
+import {
   encodeInfo,
   encodeSeat,
   encodeTrip,
   encodePassenger,
-} = require('./flights_proto.js');
+} from "./flights_proto.js";
 
 class FlightData {
   constructor({
@@ -232,6 +233,6 @@ async function retrieveFlights(args) {
 
 // main().catch(console.error);
 
-module.exports = {
+export {
   retrieveFlights
 }
