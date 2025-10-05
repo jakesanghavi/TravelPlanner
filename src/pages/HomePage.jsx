@@ -6,6 +6,8 @@ import "../index.css";
 import LeftBar from "../components/LeftBar";
 import { validateForm } from "../helpful_functions";
 import { addOrUpdatePlace } from "../api";
+import { continents } from "../useful_imports";
+
 
 // Fix Leaflet's marker icon paths
 delete L.Icon.Default.prototype._getIconUrl;
@@ -20,6 +22,7 @@ function HomePage() {
     const [isFlightModalOpen, setIsFlightModalOpen] = useState(false);
     const [selectedPlaceForView, setSelectedPlaceForView] = useState(null);
     const [isViewModalOpen, setIsViewModalOpen] = useState(false);
+    const [isFiltersModalOpen, setIsFiltersModalOpen] = useState(false);
     const [file, setFile] = useState(null);
 
 
@@ -66,18 +69,11 @@ function HomePage() {
 
     const [loggedInUser, setLoggedInUser] = useState(null);
 
-    const [visitedFilter, setVisitedFilter] = useState({
-        visited: true,
-        notVisited: true,
+    const [filters, setFilters] = useState({
+        visitedFilter: { visited: true, notVisited: true },
+        continents: ['Africa', 'Antarctica', 'Asia', 'Europe', 'North America', 'Oceania', 'South America'],
+        temperature: { min: -5, max: 120 },
     });
-
-    // Function to update the filter state
-    const handleVisitedFilterChange = (name, checked) => {
-        setVisitedFilter((prev) => ({
-            ...prev,
-            [name]: checked,
-        }));
-    };
 
     useEffect(() => {
         if (loggedInUser) {
@@ -249,19 +245,138 @@ function HomePage() {
     };
 
     return (
-        <div style={{ display: "flex", height: "100vh", width: "100vw" }}>
-            <LeftBar setSelectedPlaceForView={setSelectedPlaceForView} setIsViewModalOpen={setIsViewModalOpen}
-                places={places} handleLoginSuccess={handleLoginSuccess} getUserID={getUserID} loggedInUser={loggedInUser}
-                visitedFilter={visitedFilter} onVisitedFilterChange={handleVisitedFilterChange}></LeftBar>
-            <AddPlaceMapView loggedInUser={loggedInUser} places={places} isModalOpen={isModalOpen} 
-            setIsModalOpen={setIsModalOpen} isFlightModalOpen={isFlightModalOpen} 
-            setIsFlightModalOpen={setIsFlightModalOpen} selectedPlaceForView={selectedPlaceForView} 
-            setSelectedPlaceForView={setSelectedPlaceForView} isViewModalOpen={isViewModalOpen} 
-            setIsViewModalOpen={setIsViewModalOpen} handleFormChange={handleFormChange} 
-            handleSubmit={handleSubmit} handleFileChange={handleFileChange} 
-            file={file} form={form} visitedFilter={visitedFilter}></AddPlaceMapView>
+        <div style={{ height: "100vh", width: "100vw", display: "flex", flexDirection: "column" }}>
+            {/* Top Bar */}
+            <div style={{
+                width: "100%",
+                height: "60px",
+                backgroundColor: "#43a4ff",
+                color: "white",
+                display: "flex",
+                alignItems: "center",
+                padding: "0 20px",
+                fontWeight: "bold",
+                fontSize: "18px",
+                boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
+                zIndex: 100
+            }}>
+                Roamio
+            </div>
+
+            {/* Main Content */}
+            <div style={{ display: "flex", flex: 1 }}>
+                <LeftBar
+                    setSelectedPlaceForView={setSelectedPlaceForView}
+                    setIsViewModalOpen={setIsViewModalOpen}
+                    places={places}
+                    handleLoginSuccess={handleLoginSuccess}
+                    getUserID={getUserID}
+                    loggedInUser={loggedInUser}
+                    onAddPlaceClick={() => {
+                        setIsModalOpen(true);
+                        setForm({
+                            continent: "",
+                            country: "",
+                            city: "",
+                            name: "",
+                            lat: "",
+                            lng: "",
+                            visited: "",
+                            notes: "",
+                        });
+                        setFile(null);
+                    }}
+                    onDrawCircleClick={() => {
+                        if (!window.map) return;
+
+                        let polyline;
+                        let polygon;
+                        const latlngs = [];
+                        let drawing = false;
+                        window.map.getContainer().style.cursor = 'crosshair';
+
+                        const onMouseDown = (e) => {
+                            drawing = true;
+                            latlngs.length = 0;
+                            latlngs.push(e.latlng);
+
+                            // disable map interactions while drawing
+                            window.map.dragging.disable();
+                            window.map.doubleClickZoom.disable();
+
+                            document.body.style.userSelect = 'none';
+
+                            polyline = L.polyline(latlngs, { color: '#43a4ff' }).addTo(window.map);
+                        };
+
+                        const onMouseMove = (e) => {
+                            if (!drawing) return;
+                            latlngs.push(e.latlng);
+                            polyline.setLatLngs(latlngs);
+                        };
+
+                        const onMouseUp = () => {
+                            drawing = false;
+
+                            if (polyline) {
+                                window.map.removeLayer(polyline);
+                            }
+
+                            // Circle up polygon
+                            polygon = L.polygon(latlngs, { color: '#43a4ff', fillOpacity: 0.4 }).addTo(window.map);
+
+                            // Store polys so we can check if any lat/long is within
+                            window.drawnPolygons = window.drawnPolygons || [];
+                            window.drawnPolygons.push(polygon);
+
+                            // re-enable map interactions
+                            window.map.dragging.enable();
+                            window.map.doubleClickZoom.enable();
+
+                            window.map.getContainer().style.cursor = '';
+
+                            document.body.style.userSelect = '';
+
+                            // cleanup listeners
+                            window.map.off('mousedown', onMouseDown);
+                            window.map.off('mousemove', onMouseMove);
+                            window.map.off('mouseup', onMouseUp);
+                        };
+
+                        window.map.on('mousedown', onMouseDown);
+                        window.map.on('mousemove', onMouseMove);
+                        window.map.on('mouseup', onMouseUp);
+                    }}
+                    onPlanFlightClick={() => {
+                        setIsFlightModalOpen(true);
+                    }}
+                    setIsFiltersModalOpen={setIsFiltersModalOpen}
+                />
+                <AddPlaceMapView
+                    loggedInUser={loggedInUser}
+                    places={places}
+                    isModalOpen={isModalOpen}
+                    setIsModalOpen={setIsModalOpen}
+                    isFlightModalOpen={isFlightModalOpen}
+                    setIsFlightModalOpen={setIsFlightModalOpen}
+                    selectedPlaceForView={selectedPlaceForView}
+                    setSelectedPlaceForView={setSelectedPlaceForView}
+                    isViewModalOpen={isViewModalOpen}
+                    setIsViewModalOpen={setIsViewModalOpen}
+                    handleFormChange={handleFormChange}
+                    handleSubmit={handleSubmit}
+                    handleFileChange={handleFileChange}
+                    file={file}
+                    form={form}
+                    filters={filters}
+                    setFilters={setFilters}
+                    isFiltersModalOpen={isFiltersModalOpen}
+                    setIsFiltersModalOpen={setIsFiltersModalOpen}
+                />
+            </div>
         </div>
     );
+
 }
 
 export default HomePage;

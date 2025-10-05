@@ -36,30 +36,37 @@ export const validateForm = (form, file) => {
   return Object.keys(errors).length === 0;
 };
 
-export const extractMarkers = (places, visitedFilter) => {
+export const extractMarkers = (places, filters) => {
   const markers = [];
 
   for (const continent in places) {
+    if (filters?.continent && !filters.continent.includes(continent)) continue;
+
     for (const country in places[continent]) {
       for (const city in places[continent][country]) {
         for (const name in places[continent][country][city]) {
           const data = places[continent][country][city][name];
 
-          // Apply visitedFilter
-          if (visitedFilter) {
-            if (visitedFilter.visited && visitedFilter.notVisited) {
+          // Apply visited filter
+          if (filters?.visitedFilter) {
+            const { visited, notVisited } = filters.visitedFilter;
+            if (visited && notVisited) {
               // include all
-            } else if (visitedFilter.visited && data.visited !== "Yes") {
-              continue;
-            } else if (visitedFilter.notVisited && data.visited !== "No") {
-              continue;
-            }
+            } else if (visited && data.visited !== "Yes") continue;
+            else if (notVisited && data.visited !== "No") continue;
+          }
+
+          // Apply temperature filter
+          if (filters?.temperature) {
+            const temp = data.avgTemp; // assuming avgTemp field exists
+            const { min, max } = filters.temperature;
+            if (temp < min || temp > max) continue;
           }
 
           if (data?.lat && (data?.lng || data?.long)) {
             markers.push({
               position: [data.lat, data.lng ?? data.long],
-              name: name,
+              name,
               city,
               country,
               continent,

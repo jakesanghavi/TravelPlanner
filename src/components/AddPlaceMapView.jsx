@@ -5,11 +5,11 @@ import "leaflet/dist/leaflet.css";
 import "../index.css";
 import "leaflet-draw";
 import "leaflet-draw/dist/leaflet.draw.css";
-import Modal from "../components/Modal";
-import PlaceForm from "../components/PlaceForm";
-import ViewDetailsModal from "../components/ViewDetailsModal";
-import FlightSearchForm from "../components/FlightSearchForm";
-import FloatingActionMenu from "../components/FloatingActionMenu";
+import Modal from "./Modal";
+import PlaceForm from "./PlaceForm";
+import ViewDetailsModal from "./ViewDetailsModal";
+import FlightSearchForm from "./FlightSearchForm";
+import FilterPinsModal from './FilterPinsModal';
 
 
 function MapController({ position, zoom }) {
@@ -28,10 +28,10 @@ function MapController({ position, zoom }) {
     return null;
 }
 
-function AddPlaceMapView({ places, isModalOpen, setIsModalOpen, isFlightModalOpen, setIsFlightModalOpen, selectedPlaceForView, setSelectedPlaceForView, isViewModalOpen, setIsViewModalOpen, handleFormChange, handleSubmit, handleFileChange, file, form, loggedInUser, visitedFilter }) {
+function AddPlaceMapView({ places, isModalOpen, setIsModalOpen, isFlightModalOpen, setIsFlightModalOpen, selectedPlaceForView, setSelectedPlaceForView, isViewModalOpen, setIsViewModalOpen, handleFormChange, handleSubmit, handleFileChange, file, form, loggedInUser, filters, setFilters, isFiltersModalOpen, setIsFiltersModalOpen }) {
     const [errors, setErrors] = useState({});
 
-    const markers = extractMarkers(places, visitedFilter);
+    const markers = extractMarkers(places, filters);
 
     const openViewDetailsModal = (markerData) => {
         setSelectedPlaceForView(markerData);
@@ -106,90 +106,6 @@ function AddPlaceMapView({ places, isModalOpen, setIsModalOpen, isFlightModalOpe
                         position={selectedPlaceForView ? selectedPlaceForView.position : null}
                         zoom={6}
                     />
-                    {loggedInUser?.email && (
-                        <FloatingActionMenu
-                            onAddPlaceClick={() => {
-                                setIsModalOpen(true);
-                                setForm({
-                                    continent: "",
-                                    country: "",
-                                    city: "",
-                                    name: "",
-                                    lat: "",
-                                    lng: "",
-                                    visited: "",
-                                    notes: "",
-                                });
-                                setFile(null);
-                            }}
-                            onDrawCircleClick={() => {
-                                if (!window.map) return;
-
-                                let polyline;
-                                let polygon;
-                                const latlngs = [];
-                                let drawing = false;
-                                window.map.getContainer().style.cursor = 'crosshair';
-
-                                const onMouseDown = (e) => {
-                                    drawing = true;
-                                    latlngs.length = 0;
-                                    latlngs.push(e.latlng);
-
-                                    // disable map interactions while drawing
-                                    window.map.dragging.disable();
-                                    window.map.doubleClickZoom.disable();
-
-                                    document.body.style.userSelect = 'none';
-
-                                    polyline = L.polyline(latlngs, { color: '#43a4ff' }).addTo(window.map);
-                                };
-
-                                const onMouseMove = (e) => {
-                                    if (!drawing) return;
-                                    latlngs.push(e.latlng);
-                                    polyline.setLatLngs(latlngs);
-                                };
-
-                                const onMouseUp = () => {
-                                    drawing = false;
-
-                                    if (polyline) {
-                                        window.map.removeLayer(polyline);
-                                    }
-
-                                    // Circle up polygon
-                                    polygon = L.polygon(latlngs, { color: '#43a4ff', fillOpacity: 0.4 }).addTo(window.map);
-
-                                    // Store polys so we can check if any lat/long is within
-                                    window.drawnPolygons = window.drawnPolygons || [];
-                                    window.drawnPolygons.push(polygon);
-
-                                    // re-enable map interactions
-                                    window.map.dragging.enable();
-                                    window.map.doubleClickZoom.enable();
-
-                                    window.map.getContainer().style.cursor = '';
-
-                                    document.body.style.userSelect = '';
-
-                                    // cleanup listeners
-                                    window.map.off('mousedown', onMouseDown);
-                                    window.map.off('mousemove', onMouseMove);
-                                    window.map.off('mouseup', onMouseUp);
-                                };
-
-                                window.map.on('mousedown', onMouseDown);
-                                window.map.on('mousemove', onMouseMove);
-                                window.map.on('mouseup', onMouseUp);
-                            }}
-
-
-                            onPlanFlightClick={() => {
-                                setIsFlightModalOpen(true);
-                            }}
-                        />
-                    )}
 
                 </MapContainer>
             </div>
@@ -215,6 +131,11 @@ function AddPlaceMapView({ places, isModalOpen, setIsModalOpen, isFlightModalOpe
             <Modal isOpen={isFlightModalOpen} onClose={() => setIsFlightModalOpen(false)}>
                 <FlightSearchForm></FlightSearchForm>
             </Modal>
+            <FilterPinsModal isOpen={isFiltersModalOpen} 
+                onClose={() => setIsFiltersModalOpen(false)}
+                filters={filters}
+                setFilters={setFilters}>
+            </FilterPinsModal>
         </div>
     );
 }

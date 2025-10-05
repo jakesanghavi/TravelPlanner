@@ -70,27 +70,6 @@ function PlacesTreeView({ data, onSelectPlace, visitedFilter, onVisitedFilterCha
         }}
       />
 
-      <div className="flex gap-4 mt-2">
-        <label className="flex items-center gap-2">
-          <input
-            type="checkbox"
-            name="visited"
-            checked={visitedFilter.visited}
-            onChange={(e) => onVisitedFilterChange(e.target.name, e.target.checked)}
-          />
-          Visited
-        </label>
-        <label className="flex items-center gap-2">
-          <input
-            type="checkbox"
-            name="notVisited"
-            checked={visitedFilter.notVisited}
-            onChange={(e) => onVisitedFilterChange(e.target.name, e.target.checked)}
-          />
-          Not Visited
-        </label>
-      </div>
-
       {/* If searching, show flat result list */}
       {searchTerm ? (
         <div>
