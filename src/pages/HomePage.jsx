@@ -71,7 +71,7 @@ function HomePage() {
 
     const [filters, setFilters] = useState({
         visitedFilter: { visited: true, notVisited: true },
-        continents: ['Africa', 'Antarctica', 'Asia', 'Europe', 'North America', 'Oceania', 'South America'],
+        continents: [],
         temperature: { min: -5, max: 120 },
     });
 

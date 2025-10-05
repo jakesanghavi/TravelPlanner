@@ -1,6 +1,6 @@
+import { useEffect, useState } from "react";
 import Modal from './Modal';
 import '../component_styles/modal.css';
-import { useState } from 'react';
 import { continents, countries } from "../useful_imports";
 
 const FilterPinsModal = ({ isOpen, onClose, filters, setFilters }) => {
@@ -31,6 +31,12 @@ const FilterPinsModal = ({ isOpen, onClose, filters, setFilters }) => {
     };
 
     const continentsConst = continents();
+
+    useEffect(() => {
+        if (!filters.continent || filters.continent.length === 0) {
+            setFilters(prev => ({ ...prev, continent: continentsConst }));
+        }
+    }, [continentsConst]);
 
     return (
         <Modal isOpen={isOpen} onClose={onClose} className="text-black">
@@ -65,7 +71,7 @@ const FilterPinsModal = ({ isOpen, onClose, filters, setFilters }) => {
                                 <label key={c} className="mr-2 text-black">
                                     <input
                                         type="checkbox"
-                                        checked={filters?.continent?.includes(c) ?? true}
+                                        checked={filters.continent?.includes(c)}
                                         onChange={(e) => handleContinentChange(c, e.target.checked)}
                                     />{" "}
                                     {c}
