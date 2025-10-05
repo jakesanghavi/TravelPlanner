@@ -122,6 +122,7 @@ function AddPlaceMapView({ places, isModalOpen, setIsModalOpen, isFlightModalOpe
                                 let polygon;
                                 const latlngs = [];
                                 let drawing = false;
+                                window.map.getContainer().style.cursor = 'crosshair';
 
                                 const onMouseDown = (e) => {
                                     drawing = true;
@@ -132,7 +133,9 @@ function AddPlaceMapView({ places, isModalOpen, setIsModalOpen, isFlightModalOpe
                                     window.map.dragging.disable();
                                     window.map.doubleClickZoom.disable();
 
-                                    polyline = L.polyline(latlngs, { color: 'red' }).addTo(window.map);
+                                    document.body.style.userSelect = 'none';
+
+                                    polyline = L.polyline(latlngs, { color: '#43a4ff' }).addTo(window.map);
                                 };
 
                                 const onMouseMove = (e) => {
@@ -149,7 +152,7 @@ function AddPlaceMapView({ places, isModalOpen, setIsModalOpen, isFlightModalOpe
                                     }
 
                                     // Circle up polygon
-                                    polygon = L.polygon(latlngs, { color: 'red', fillOpacity: 0.3 }).addTo(window.map);
+                                    polygon = L.polygon(latlngs, { color: '#43a4ff', fillOpacity: 0.4 }).addTo(window.map);
 
                                     // Store polys so we can check if any lat/long is within
                                     window.drawnPolygons = window.drawnPolygons || [];
@@ -158,6 +161,10 @@ function AddPlaceMapView({ places, isModalOpen, setIsModalOpen, isFlightModalOpe
                                     // re-enable map interactions
                                     window.map.dragging.enable();
                                     window.map.doubleClickZoom.enable();
+
+                                    window.map.getContainer().style.cursor = '';
+
+                                    document.body.style.userSelect = '';
 
                                     // cleanup listeners
                                     window.map.off('mousedown', onMouseDown);
