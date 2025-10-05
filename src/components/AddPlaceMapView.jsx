@@ -117,6 +117,7 @@ function AddPlaceMapView({ places, isModalOpen, setIsModalOpen, isFlightModalOpe
                                     name: "",
                                     lat: "",
                                     lng: "",
+                                    visited: "",
                                     notes: "",
                                 });
                                 setFile(null);

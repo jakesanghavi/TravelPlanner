@@ -75,6 +75,7 @@ const postPlace = async (req, res) => {
         name,
         lat,
         lng,
+        visited,
         notes = "",
     } = req.body;
     const file = req.file; // The uploaded file
@@ -147,6 +148,7 @@ const postPlace = async (req, res) => {
         await placeRef.set({
             lat: parseFloat(lat),
             lng: parseFloat(lng),
+            visited,
             notes,
             imageUrl: imageOutput.url,
             normals: closestStation?.normals || null

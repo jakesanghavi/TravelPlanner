@@ -14,6 +14,7 @@ export default function PlaceForm({
   toDisplay,
   errors,
 }) {
+  const binary = ["Yes", "No"]
   return (
     <motion.form
       onSubmit={onFormSubmit}
@@ -119,6 +120,21 @@ export default function PlaceForm({
           className="bg-white border border-slate-300 text-black placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-[#43a4ff] focus:border-[#43a4ff] rounded-md transition-all duration-300 px-3 py-2"
         />
       </div>
+
+      <Select
+        id="visited"
+        value={form.visited}
+        onChange={(e) => onFormChange("visited", e.target.value)}
+        required
+        className="bg-white border border-slate-300 text-black placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-[#43a4ff] focus:border-[#43a4ff] rounded-md transition-all duration-300 px-3 py-2"
+      >
+        <option value="">Visited Before?</option>
+        {binary.map((o) => (
+          <option key={o} value={o}>
+            {o}
+          </option>
+        ))}
+      </Select>
 
       {/* File Upload */}
       <div>

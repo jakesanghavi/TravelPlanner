@@ -16,26 +16,44 @@ const openLoginModal = (email) => {
     document.getElementById('signUpEmail').value = email;
 };
 
-function LeftBar({setSelectedPlaceForView, setIsViewModalOpen, places, handleLoginSuccess, getUserID, loggedInUser}) {
-
+function LeftBar({
+    setSelectedPlaceForView,
+    setIsViewModalOpen,
+    places,
+    handleLoginSuccess,
+    getUserID,
+    loggedInUser,
+}) {
     const onSelectPlaceFromTree = (placeData) => {
         setSelectedPlaceForView(placeData);
         setIsViewModalOpen(true);
     };
 
     return (
-        <div style={{ width: "15%", backgroundColor: "#f8f9fa", padding: "10px", overflowY: "auto", color: "black" }}>
-            <Login onLoginSuccess={handleLoginSuccess} uid={getUserID} openLoginModal={openLoginModal} />
-            <div id="signIn">
+        <div className="w-60 bg-white/90 backdrop-blur-sm p-4 overflow-y-auto border-r border-slate-200 text-black">
+            <Login
+                onLoginSuccess={handleLoginSuccess}
+                uid={getUserID}
+                openLoginModal={openLoginModal}
+            />
+
+            <div id="signIn" className="my-4 text-center">
                 {!loggedInUser?.email ? (
-                    <button onClick={openLoginModal}>Sign In to Start Planning!</button>
+                    <button
+                        onClick={openLoginModal}
+                        className="w-full bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white font-medium py-2 rounded-lg transition-all duration-300"
+                    >
+                        Sign In to Start Planning!
+                    </button>
                 ) : (
-                    <span>{loggedInUser.username}</span>
+                    <span className="font-semibold text-slate-800">{loggedInUser.username}</span>
                 )}
             </div>
+
             <PlacesTreeView data={places} onSelectPlace={onSelectPlaceFromTree} />
         </div>
     );
 }
+
 
 export default LeftBar;
