@@ -44,9 +44,9 @@ export default function PlaceForm({
           </option>
         ))}
       </Select>
-      {errors?.continent && (
+      {/* {errors?.continent && (
         <p className="text-red-400 text-sm">{errors.continent}</p>
-      )}
+      )} */}
 
       {/* Country */}
       <Select
@@ -135,6 +135,7 @@ export default function PlaceForm({
           </option>
         ))}
       </Select>
+      {errors?.visited && <p className="text-red-400 text-sm">{errors.visited}</p>}
 
       {/* File Upload */}
       <div>

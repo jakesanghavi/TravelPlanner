@@ -15,6 +15,7 @@ const ViewDetailsModal = ({ isOpen, onClose, placeData }) => {
         <p><strong>Continent:</strong> {placeData.continent}</p>
         <p><strong>Country:</strong> {placeData.country}</p>
         <p><strong>City:</strong> {placeData.city}</p>
+        <p><strong>Visited: </strong>{placeData.visited}</p>
         {placeData.description && <p><strong>Notes:</strong> {placeData.description}</p>}
       </div>
       <div className="flex justify-center mt-6">

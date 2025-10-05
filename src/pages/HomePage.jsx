@@ -66,7 +66,18 @@ function HomePage() {
 
     const [loggedInUser, setLoggedInUser] = useState(null);
 
+    const [visitedFilter, setVisitedFilter] = useState({
+        visited: true,
+        notVisited: true,
+    });
 
+    // Function to update the filter state
+    const handleVisitedFilterChange = (name, checked) => {
+        setVisitedFilter((prev) => ({
+            ...prev,
+            [name]: checked,
+        }));
+    };
 
     useEffect(() => {
         if (loggedInUser) {
@@ -239,8 +250,16 @@ function HomePage() {
 
     return (
         <div style={{ display: "flex", height: "100vh", width: "100vw" }}>
-            <LeftBar setSelectedPlaceForView={setSelectedPlaceForView} setIsViewModalOpen={setIsViewModalOpen} places={places} handleLoginSuccess={handleLoginSuccess} getUserID={getUserID} loggedInUser={loggedInUser}></LeftBar>
-            <AddPlaceMapView loggedInUser={loggedInUser} places={places} isModalOpen={isModalOpen} setIsModalOpen={setIsModalOpen} isFlightModalOpen={isFlightModalOpen} setIsFlightModalOpen={setIsFlightModalOpen} selectedPlaceForView={selectedPlaceForView} setSelectedPlaceForView={setSelectedPlaceForView} isViewModalOpen={isViewModalOpen} setIsViewModalOpen={setIsViewModalOpen} handleFormChange={handleFormChange} handleSubmit={handleSubmit} handleFileChange={handleFileChange} file={file} form={form}></AddPlaceMapView>
+            <LeftBar setSelectedPlaceForView={setSelectedPlaceForView} setIsViewModalOpen={setIsViewModalOpen}
+                places={places} handleLoginSuccess={handleLoginSuccess} getUserID={getUserID} loggedInUser={loggedInUser}
+                visitedFilter={visitedFilter} onVisitedFilterChange={handleVisitedFilterChange}></LeftBar>
+            <AddPlaceMapView loggedInUser={loggedInUser} places={places} isModalOpen={isModalOpen} 
+            setIsModalOpen={setIsModalOpen} isFlightModalOpen={isFlightModalOpen} 
+            setIsFlightModalOpen={setIsFlightModalOpen} selectedPlaceForView={selectedPlaceForView} 
+            setSelectedPlaceForView={setSelectedPlaceForView} isViewModalOpen={isViewModalOpen} 
+            setIsViewModalOpen={setIsViewModalOpen} handleFormChange={handleFormChange} 
+            handleSubmit={handleSubmit} handleFileChange={handleFileChange} 
+            file={file} form={form} visitedFilter={visitedFilter}></AddPlaceMapView>
         </div>
     );
 }

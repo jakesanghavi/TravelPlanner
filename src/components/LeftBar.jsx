@@ -23,6 +23,8 @@ function LeftBar({
     handleLoginSuccess,
     getUserID,
     loggedInUser,
+    visitedFilter,
+    onVisitedFilterChange
 }) {
     const onSelectPlaceFromTree = (placeData) => {
         setSelectedPlaceForView(placeData);
@@ -50,7 +52,7 @@ function LeftBar({
                 )}
             </div>
 
-            <PlacesTreeView data={places} onSelectPlace={onSelectPlaceFromTree} />
+            <PlacesTreeView data={places} onSelectPlace={onSelectPlaceFromTree} visitedFilter={visitedFilter} onVisitedFilterChange={onVisitedFilterChange}/>
         </div>
     );
 }

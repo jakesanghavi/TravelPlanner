@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { emojiIcon, extractMarkers } from '../helpful_functions'
 import { MapContainer, TileLayer, Marker, Popup, useMap } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
@@ -28,10 +28,10 @@ function MapController({ position, zoom }) {
     return null;
 }
 
-function AddPlaceMapView({ places, isModalOpen, setIsModalOpen, isFlightModalOpen, setIsFlightModalOpen, selectedPlaceForView, setSelectedPlaceForView, isViewModalOpen, setIsViewModalOpen, handleFormChange, handleSubmit, handleFileChange, file, form, loggedInUser }) {
+function AddPlaceMapView({ places, isModalOpen, setIsModalOpen, isFlightModalOpen, setIsFlightModalOpen, selectedPlaceForView, setSelectedPlaceForView, isViewModalOpen, setIsViewModalOpen, handleFormChange, handleSubmit, handleFileChange, file, form, loggedInUser, visitedFilter }) {
     const [errors, setErrors] = useState({});
 
-    const markers = extractMarkers(places);
+    const markers = extractMarkers(places, visitedFilter);
 
     const openViewDetailsModal = (markerData) => {
         setSelectedPlaceForView(markerData);
