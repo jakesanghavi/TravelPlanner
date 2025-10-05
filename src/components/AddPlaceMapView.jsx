@@ -38,6 +38,10 @@ function AddPlaceMapView({ places, isModalOpen, setIsModalOpen, isFlightModalOpe
         setIsViewModalOpen(true);
     };
 
+    const southWest = [-90, -180];
+    const northEast = [90, 180];
+    const bounds = [southWest, northEast];
+
     return (
 
         <div style={{ height: "100%", width: "100%" }}>
@@ -50,6 +54,8 @@ function AddPlaceMapView({ places, isModalOpen, setIsModalOpen, isFlightModalOpe
                     zoomDelta={2}
                     style={{ height: "100%", width: "100%", zIndex: 0 }}
                     minZoom={2.30000001}
+                    maxBounds={bounds}
+                    maxBoundsViscosity={1.0}
                 >
                     {/* globelike */}
                     {/* <TileLayer
