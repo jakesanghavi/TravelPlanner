@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 
-function PlacesTreeView({ data, onSelectPlace, visitedFilter, onVisitedFilterChange }) {
+function PlacesTreeView({ data, onSelectPlace }) {
   const [expandedNodes, setExpandedNodes] = useState({});
   const [searchTerm, setSearchTerm] = useState("");
 

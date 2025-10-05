@@ -38,15 +38,16 @@ export default function PlaceForm({
         className="bg-white border border-slate-300 text-black placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-[#43a4ff] focus:border-[#43a4ff] rounded-md transition-all duration-300 px-3 py-2"
       >
         <option value="">Select Continent</option>
-        {continents().map((continent) => (
+        {Array.from(new Set(countries().map((c) => c.continent))).map((continent) => (
           <option key={continent} value={continent}>
             {continent}
           </option>
         ))}
       </Select>
-      {/* {errors?.continent && (
+
+      {errors?.continent && (
         <p className="text-red-400 text-sm">{errors.continent}</p>
-      )} */}
+      )}
 
       {/* Country */}
       <Select
@@ -57,11 +58,13 @@ export default function PlaceForm({
         className="bg-white border border-slate-300 text-black placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-[#43a4ff] focus:border-[#43a4ff] rounded-md transition-all duration-300 px-3 py-2"
       >
         <option value="">Select Country</option>
-        {countries().map((country) => (
-          <option key={country} value={country}>
-            {country}
-          </option>
-        ))}
+        {countries()
+          .filter((c) => !form.continent || c.continent === form.continent)
+          .map((c) => (
+            <option key={c.country} value={c.country}>
+              {c.country}
+            </option>
+          ))}
       </Select>
       {errors?.country && (
         <p className="text-red-400 text-sm">{errors.country}</p>

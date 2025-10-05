@@ -4,7 +4,7 @@ import Select from '../overrides/Select';
 import Button from '../overrides/Button';
 import SearchableSelect from '../overrides/SearchableSelect'
 import DatePicker from '../overrides/DatePicker';
-import { airports } from '../useful_imports';
+import { airports } from '../airports_import';
 
 const FlightSearchForm = () => {
   const [args, setArgs] = useState({
@@ -47,6 +47,8 @@ const FlightSearchForm = () => {
     }
   };
 
+  const airportsConst = airports();
+
   return (
     <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-8 border border-slate-200 max-w-3xl mx-auto space-y-6 max-h-[90vh] overflow-y-scroll">
       <h2 className="text-3xl font-bold mb-6 text-center bg-gradient-to-r from-[#43a4ff] to-blue-600 bg-clip-text text-transparent">
@@ -78,7 +80,7 @@ const FlightSearchForm = () => {
             Origin:
             <SearchableSelect
               name="origin"
-              options={airports()}
+              options={airportsConst}
               value={args.origin}
               onChange={(e) => setArgs((prev) => ({ ...prev, origin: e.target.value }))}
               placeholder="Origin"
@@ -92,7 +94,7 @@ const FlightSearchForm = () => {
             Destination:
             <SearchableSelect
               name="destination"
-              options={airports()}
+              options={airportsConst}
               value={args.destination}
               onChange={(e) => setArgs((prev) => ({ ...prev, destination: e.target.value }))}
               placeholder="Destination"
