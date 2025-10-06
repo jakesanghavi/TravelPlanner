@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState, useCallback } from 'react';
 import { jwtDecode } from "jwt-decode";
 import '../component_styles/login-styles.css';
+import ReactDOM from "react-dom";
 
 // Login button 
 const Login = ({ onLoginSuccess, uid, openLoginModal }) => {
@@ -333,7 +334,7 @@ const Login = ({ onLoginSuccess, uid, openLoginModal }) => {
     }
   };
 
-  return (
+  return ReactDOM.createPortal(
     <>
       {!googleSignin && !forgotPassword &&
         <div id="sign-in-modal" ref={modalRef}>
@@ -475,7 +476,8 @@ const Login = ({ onLoginSuccess, uid, openLoginModal }) => {
           </div>
         </div >
       }
-    </>
+    </>,
+    document.body
   );
 };
 

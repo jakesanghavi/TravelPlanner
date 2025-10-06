@@ -68,6 +68,7 @@ function PlacesTreeView({ data, onSelectPlace }) {
           borderRadius: "4px",
           border: "1px solid #ccc",
         }}
+        className="text-black"
       />
 
       {/* If searching, show flat result list */}
