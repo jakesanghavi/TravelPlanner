@@ -1,4 +1,5 @@
 import roamioFull from '../assets/roamio_full.png';
+import { Link } from 'react-router-dom'
 
 const FlightSearchForm = () => {
     return (
@@ -15,7 +16,9 @@ const FlightSearchForm = () => {
             boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
             zIndex: 100
         }}>
-            <img src={roamioFull} alt='logo' style={{ "height": "60px" }}></img>
+            <Link to='/'>
+                <img src={roamioFull} alt='logo' style={{ "height": "60px" }}></img>
+            </Link>
         </div>
     );
 }

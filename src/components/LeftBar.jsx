@@ -1,20 +1,13 @@
 import PlacesTreeView from "../components/PlacesTreeView";
 import Login from "../components/Login"
-import L from "leaflet";
 import "../index.css";
+import "../component_styles/leftbar.css"
 import { FaPlane, FaFilter } from "react-icons/fa";
 import { LuLassoSelect } from "react-icons/lu";
 import { MdAddLocationAlt } from "react-icons/md";
 import SlidingToggle from "./SlidingToggle";
 import { sliderStyles } from "../useful_imports";
-
-// Fix Leaflet's marker icon paths
-delete L.Icon.Default.prototype._getIconUrl;
-L.Icon.Default.mergeOptions({
-    iconRetinaUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png",
-    iconUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png",
-    shadowUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png",
-});
+import { useState, useEffect } from "react";
 
 const openLoginModal = (email) => {
     document.getElementById('sign-in-modal').style.display = 'block';
@@ -34,6 +27,14 @@ function LeftBar({
     filterPlaces,
     setIsFiltersModalOpen
 }) {
+    const [loaded, setLoaded] = useState(false);
+
+    useEffect(() => {
+        if (loggedInUser?.email) {
+            setLoaded(true);
+        }
+    }, [loggedInUser]);
+
     const onSelectPlaceFromTree = (placeData) => {
         setSelectedPlaceForView(placeData);
         setIsViewModalOpen(true);
@@ -44,8 +45,7 @@ function LeftBar({
     }
 
     return (
-        <div className="w-60 bg-white backdrop-blur-sm p-4 overflow-y-auto border-r border-slate-200 text-black">
-
+        <div className={`leftbar-slide-in ${loaded ? "loaded" : ""} w-60 bg-white backdrop-blur-sm p-4 overflow-y-auto border-r border-slate-200 text-black`}>
             {loggedInUser?.email &&
                 <div style={{ marginBottom: '0.25rem' }}>
                     <style>{sliderStyles}</style>
