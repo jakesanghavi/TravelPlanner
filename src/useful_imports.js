@@ -289,11 +289,11 @@ export const sliderStyles = `
         color: #6b7280;
     }
     .status-active-plan {
-        color: #367f36;
+        color: #43a4ff;
         font-weight: 700;
     }
     .status-active-explore {
-        color: #3b82f6;
+        color: #43a4ff;
         font-weight: 700;
     }
 

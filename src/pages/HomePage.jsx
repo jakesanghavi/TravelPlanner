@@ -6,7 +6,7 @@ import "../index.css";
 import LeftBar from "../components/LeftBar";
 import { validateForm } from "../helpful_functions";
 import { addOrUpdatePlace } from "../api";
-
+import TopBar from "../components/TopBar"
 
 // Fix Leaflet's marker icon paths
 delete L.Icon.Default.prototype._getIconUrl;
@@ -202,22 +202,8 @@ function HomePage({ getUserID, handleLoginSuccess, loggedInUser, setLoggedInUser
 
     return (
         <div style={{ height: "100vh", width: "100vw", display: "flex", flexDirection: "column" }}>
-            {/* Top Bar */}
-            <div style={{
-                width: "100%",
-                height: "60px",
-                backgroundColor: "#43a4ff",
-                color: "white",
-                display: "flex",
-                alignItems: "center",
-                padding: "0 20px",
-                fontWeight: "bold",
-                fontSize: "18px",
-                boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
-                zIndex: 100
-            }}>
-                Roamio
-            </div>
+            
+            <TopBar/>
 
             {/* Main Content */}
             <div style={{ display: "flex", flex: 1 }}>

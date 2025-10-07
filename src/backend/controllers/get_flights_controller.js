@@ -1,4 +1,3 @@
-import db from "../firebase-admin.js";
 import { retrieveFlights } from "../js_helpers/get_flights.js";
 
 const getFlights = async (req, res) => {

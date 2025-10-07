@@ -46,10 +46,12 @@ function LeftBar({
     return (
         <div className="w-60 bg-white backdrop-blur-sm p-4 overflow-y-auto border-r border-slate-200 text-black">
 
-            <div style={{ marginBottom: '0.25rem' }}>
-                <style>{sliderStyles}</style>
-                <SlidingToggle></SlidingToggle>
-            </div>
+            {loggedInUser?.email &&
+                <div style={{ marginBottom: '0.25rem' }}>
+                    <style>{sliderStyles}</style>
+                    <SlidingToggle></SlidingToggle>
+                </div>
+            }
             <div>
                 <Login onLoginSuccess={handleLoginSuccess} uid={getUserID} openLoginModal={openLoginModal} />
                 <div id="signIn">
