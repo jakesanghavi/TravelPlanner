@@ -24,6 +24,14 @@ function HomePage({ getUserID, handleLoginSuccess, loggedInUser, setLoggedInUser
     const [isFiltersModalOpen, setIsFiltersModalOpen] = useState(false);
     const [file, setFile] = useState(null);
     const [places, setPlaces] = useState({});
+    const [loadedLeftBar, setLoadedLeftBar] = useState(false);
+
+    useEffect(() => {
+        if (loggedInUser?.email) {
+            const timer = setTimeout(() => setLoadedLeftBar(true), 100);
+            return () => clearTimeout(timer);
+        }
+    }, [loggedInUser?.email]);
 
     const [filters, setFilters] = useState({
         visitedFilter: { visited: true, notVisited: true },
@@ -201,99 +209,13 @@ function HomePage({ getUserID, handleLoginSuccess, loggedInUser, setLoggedInUser
     };
 
     return (
-        <div style={{ height: "100vh", width: "100vw", display: "flex", flexDirection: "column" }}>
-            
-            <TopBar/>
+        <div style={{ height: "100vh", width: "100vw", display: "flex", flexDirection: "column", position: "relative" }}>
+
+            <TopBar />
 
             {/* Main Content */}
-            <div style={{ display: "flex", flex: 1 }}>
-                <LeftBar
-                    setSelectedPlaceForView={setSelectedPlaceForView}
-                    setIsViewModalOpen={setIsViewModalOpen}
-                    places={places}
-                    handleLoginSuccess={handleLoginSuccess}
-                    getUserID={getUserID}
-                    loggedInUser={loggedInUser}
-                    onAddPlaceClick={() => {
-                        setIsModalOpen(true);
-                        setForm({
-                            continent: "",
-                            country: "",
-                            city: "",
-                            name: "",
-                            lat: "",
-                            lng: "",
-                            visited: "",
-                            notes: "",
-                        });
-                        setFile(null);
-                    }}
-                    onDrawCircleClick={() => {
-                        if (!window.map) return;
-
-                        let polyline;
-                        let polygon;
-                        const latlngs = [];
-                        let drawing = false;
-                        window.map.getContainer().style.cursor = 'crosshair';
-
-                        const onMouseDown = (e) => {
-                            drawing = true;
-                            latlngs.length = 0;
-                            latlngs.push(e.latlng);
-
-                            // disable map interactions while drawing
-                            window.map.dragging.disable();
-                            window.map.doubleClickZoom.disable();
-
-                            document.body.style.userSelect = 'none';
-
-                            polyline = L.polyline(latlngs, { color: '#43a4ff' }).addTo(window.map);
-                        };
-
-                        const onMouseMove = (e) => {
-                            if (!drawing) return;
-                            latlngs.push(e.latlng);
-                            polyline.setLatLngs(latlngs);
-                        };
-
-                        const onMouseUp = () => {
-                            drawing = false;
-
-                            if (polyline) {
-                                window.map.removeLayer(polyline);
-                            }
-
-                            // Circle up polygon
-                            polygon = L.polygon(latlngs, { color: '#43a4ff', fillOpacity: 0.4 }).addTo(window.map);
-
-                            // Store polys so we can check if any lat/long is within
-                            window.drawnPolygons = window.drawnPolygons || [];
-                            window.drawnPolygons.push(polygon);
-
-                            // re-enable map interactions
-                            window.map.dragging.enable();
-                            window.map.doubleClickZoom.enable();
-
-                            window.map.getContainer().style.cursor = '';
-
-                            document.body.style.userSelect = '';
-
-                            // cleanup listeners
-                            window.map.off('mousedown', onMouseDown);
-                            window.map.off('mousemove', onMouseMove);
-                            window.map.off('mouseup', onMouseUp);
-                        };
-
-                        window.map.on('mousedown', onMouseDown);
-                        window.map.on('mousemove', onMouseMove);
-                        window.map.on('mouseup', onMouseUp);
-                    }}
-                    onPlanFlightClick={() => {
-                        setIsFlightModalOpen(true);
-                    }}
-                    setIsFiltersModalOpen={setIsFiltersModalOpen}
-                />
+            <div style={{ flex: 1,  display: "flex" }}>
+                {/* Map always full size */}
                 <AddPlaceMapView
                     loggedInUser={loggedInUser}
                     places={places}
@@ -315,10 +237,90 @@ function HomePage({ getUserID, handleLoginSuccess, loggedInUser, setLoggedInUser
                     isFiltersModalOpen={isFiltersModalOpen}
                     setIsFiltersModalOpen={setIsFiltersModalOpen}
                 />
+
+                {/* Sidebar overlay */}
+                {loggedInUser?.email && (
+                    <div className={`leftbar-overlay ${loadedLeftBar ? "loaded" : ""}`}>
+                        <LeftBar
+                            setSelectedPlaceForView={setSelectedPlaceForView}
+                            setIsViewModalOpen={setIsViewModalOpen}
+                            places={places}
+                            handleLoginSuccess={handleLoginSuccess}
+                            getUserID={getUserID}
+                            loggedInUser={loggedInUser}
+                            onAddPlaceClick={() => {
+                                setIsModalOpen(true);
+                                setForm({
+                                    continent: "",
+                                    country: "",
+                                    city: "",
+                                    name: "",
+                                    lat: "",
+                                    lng: "",
+                                    visited: "",
+                                    notes: "",
+                                });
+                                setFile(null);
+                            }}
+                            onDrawCircleClick={() => {
+                                if (!window.map) return;
+
+                                let polyline;
+                                let polygon;
+                                const latlngs = [];
+                                let drawing = false;
+                                window.map.getContainer().style.cursor = 'crosshair';
+
+                                const onMouseDown = (e) => {
+                                    drawing = true;
+                                    latlngs.length = 0;
+                                    latlngs.push(e.latlng);
+
+                                    window.map.dragging.disable();
+                                    window.map.doubleClickZoom.disable();
+                                    document.body.style.userSelect = 'none';
+
+                                    polyline = L.polyline(latlngs, { color: '#43a4ff' }).addTo(window.map);
+                                };
+
+                                const onMouseMove = (e) => {
+                                    if (!drawing) return;
+                                    latlngs.push(e.latlng);
+                                    polyline.setLatLngs(latlngs);
+                                };
+
+                                const onMouseUp = () => {
+                                    drawing = false;
+                                    if (polyline) window.map.removeLayer(polyline);
+
+                                    polygon = L.polygon(latlngs, { color: '#43a4ff', fillOpacity: 0.4 }).addTo(window.map);
+                                    window.drawnPolygons = window.drawnPolygons || [];
+                                    window.drawnPolygons.push(polygon);
+
+                                    window.map.dragging.enable();
+                                    window.map.doubleClickZoom.enable();
+                                    window.map.getContainer().style.cursor = '';
+                                    document.body.style.userSelect = '';
+
+                                    window.map.off('mousedown', onMouseDown);
+                                    window.map.off('mousemove', onMouseMove);
+                                    window.map.off('mouseup', onMouseUp);
+                                };
+
+                                window.map.on('mousedown', onMouseDown);
+                                window.map.on('mousemove', onMouseMove);
+                                window.map.on('mouseup', onMouseUp);
+                            }}
+                            onPlanFlightClick={() => {
+                                setIsFlightModalOpen(true);
+                            }}
+                            setIsFiltersModalOpen={setIsFiltersModalOpen}
+                        />
+                    </div>
+                )}
             </div>
         </div>
     );
-
 }
 
 export default HomePage;

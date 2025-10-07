@@ -38,8 +38,8 @@ function AddPlaceMapView({ places, isModalOpen, setIsModalOpen, isFlightModalOpe
         setIsViewModalOpen(true);
     };
 
-    const southWest = [-90, -180];
-    const northEast = [90, 180];
+    const southWest = [-90, -210];
+    const northEast = [90, 150];
     const bounds = [southWest, northEast];
 
     return (
@@ -48,12 +48,12 @@ function AddPlaceMapView({ places, isModalOpen, setIsModalOpen, isFlightModalOpe
             {/* Right Panel - 85% */}
             <div style={{ height: "100%", width: "100%" }}>
                 <MapContainer
-                    center={[40, 10.4515]}
-                    zoom={2.3000001}
+                    center={[30, 10.4515]}
+                    zoom={1.9000001}
                     zoomSnap={0.75}
                     zoomDelta={2}
                     style={{ height: "100%", width: "100%", zIndex: 0 }}
-                    minZoom={2.30000001}
+                    minZoom={1.90000001}
                     maxBounds={bounds}
                     maxBoundsViscosity={1.0}
                 >
