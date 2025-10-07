@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState } from "react";
 import L from "leaflet";
 import { getPlaces } from "../api";
 import AddPlaceMapView from "../components/AddPlaceMapView";
@@ -6,7 +6,6 @@ import "../index.css";
 import LeftBar from "../components/LeftBar";
 import { validateForm } from "../helpful_functions";
 import { addOrUpdatePlace } from "../api";
-import { continents } from "../useful_imports";
 
 
 // Fix Leaflet's marker icon paths
@@ -17,57 +16,14 @@ L.Icon.Default.mergeOptions({
     shadowUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png",
 });
 
-function HomePage() {
+function HomePage({ getUserID, handleLoginSuccess, loggedInUser, setLoggedInUser }) {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isFlightModalOpen, setIsFlightModalOpen] = useState(false);
     const [selectedPlaceForView, setSelectedPlaceForView] = useState(null);
     const [isViewModalOpen, setIsViewModalOpen] = useState(false);
     const [isFiltersModalOpen, setIsFiltersModalOpen] = useState(false);
     const [file, setFile] = useState(null);
-
-
-    const generateUserID = () => {
-        return 'user_' + Math.random().toString(36).substring(2, 15);
-    };
-
-    const getUserID = useCallback(() => {
-        let userID = localStorage.getItem('userID');
-
-        // If the user ID is not found in localStorage, generate a new one
-        if (!userID) {
-            userID = generateUserID();
-            localStorage.setItem('userID', userID);
-        }
-
-        return userID;
-    }, []);
     const [places, setPlaces] = useState({});
-
-    const handleLoginSuccess = async (email, username) => {
-        const element = document.getElementById('signInDiv')?.firstChild?.firstChild;
-        if (element) {
-            element.remove();
-        }
-
-        const userID = getUserID();
-        // Update the loggedInUser state
-        await fetch(import.meta.env.VITE_BACKEND_URL + '/users/userID/patch/' + userID, {
-            method: 'POST',
-            headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ "userID": userID, "email_address": email })
-        });
-
-        setLoggedInUser({ email: email, username: username });
-
-        // const user = await fetch(ROUTE + '/api/users/email/' + email);
-        // const user_resp = await user.json();
-        // setLoggedInUser({ email: user_resp.email_address, username: user_resp.username });
-    };
-
-    const [loggedInUser, setLoggedInUser] = useState(null);
 
     const [filters, setFilters] = useState({
         visitedFilter: { visited: true, notVisited: true },
