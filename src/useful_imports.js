@@ -1,13 +1,13 @@
 export const continents = () => {
-    return [
-        "Africa",
-        "Antarctica",
-        "Asia",
-        "Europe",
-        "North America",
-        "Oceania",
-        "South America"
-    ]
+  return [
+    "Africa",
+    "Antarctica",
+    "Asia",
+    "Europe",
+    "North America",
+    "Oceania",
+    "South America"
+  ]
 }
 
 export const countries = () => {
@@ -208,3 +208,101 @@ export const countries = () => {
     { country: "Zimbabwe", continent: "Africa" }
   ];
 }
+
+export const sliderStyles = `
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+
+    .app-root {
+        font-family: 'Inter', sans-serif;
+        min-height: 100vh;
+        background-color: #f9fafb;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 1rem;
+    }
+
+    .app-card {
+        padding: 1rem;
+        background-color: white;
+        border-radius: 12px;
+        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+        width: 100%;
+        max-width: 28rem;
+        margin-left: auto;
+        margin-right: auto;
+    }
+    
+    .header {
+        font-size: 1rem;
+        font-weight: 700;
+        color: #1f2937;
+        margin-bottom: 0.5rem;
+        text-align: center;
+    }
+
+    .slider-controls {
+        position: relative;
+        display: flex;
+        height: 3rem;
+        width: 100%;
+        overflow: hidden;
+        justify-content: space-between;
+        border: 1px solid #d1d5db;
+        border-radius: 0.5rem;
+        box-shadow: inset 0 2px 4px 0 rgba(0, 0, 0, 0.06);
+    }
+
+    .slider-tab {
+        position: absolute;
+        height: 100%;
+        width: 50%;
+        z-index: 0;
+        border-radius: 0.5rem;
+    }
+    
+    .slide-button {
+        width: 50%;
+        height: 100%;
+        font-size: 1rem;
+        font-weight: 600;
+        text-align: center;
+        cursor: pointer;
+        z-index: 1;
+        transition: color 0.2s ease;
+        border: none;
+        background: none;
+        display: flex; align-items: center;
+        justify-content: center;
+    }
+
+    .inactive-text {
+        color: #1f2937;
+    }
+    .active-text {
+        color: white;
+    }
+    .status-text {
+        text-align: center;
+        margin-top: 1.5rem;
+        font-size: 0.875rem;
+        color: #6b7280;
+    }
+    .status-active-plan {
+        color: #367f36;
+        font-weight: 700;
+    }
+    .status-active-explore {
+        color: #3b82f6;
+        font-weight: 700;
+    }
+
+    .slide-button:focus {
+        outline: none;
+        box-shadow: none;
+    }
+
+    .slide-button:active {
+        background: none;
+    }
+`;

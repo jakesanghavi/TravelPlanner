@@ -5,6 +5,8 @@ import "../index.css";
 import { FaPlane, FaFilter } from "react-icons/fa";
 import { LuLassoSelect } from "react-icons/lu";
 import { MdAddLocationAlt } from "react-icons/md";
+import SlidingToggle from "./SlidingToggle";
+import { sliderStyles } from "../useful_imports";
 
 // Fix Leaflet's marker icon paths
 delete L.Icon.Default.prototype._getIconUrl;
@@ -42,7 +44,12 @@ function LeftBar({
     }
 
     return (
-        <div className="w-60 bg-white/90 backdrop-blur-sm p-4 overflow-y-auto border-r border-slate-200 text-black">
+        <div className="w-60 bg-white backdrop-blur-sm p-4 overflow-y-auto border-r border-slate-200 text-black">
+
+            <div style={{ marginBottom: '0.25rem' }}>
+                <style>{sliderStyles}</style>
+                <SlidingToggle></SlidingToggle>
+            </div>
             <div>
                 <Login onLoginSuccess={handleLoginSuccess} uid={getUserID} openLoginModal={openLoginModal} />
                 <div id="signIn">
