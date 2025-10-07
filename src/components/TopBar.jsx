@@ -14,7 +14,8 @@ const FlightSearchForm = () => {
             fontWeight: "bold",
             fontSize: "18px",
             boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
-            zIndex: 100
+            zIndex: 100,
+            position: "fixed"
         }}>
             <Link to='/'>
                 <img src={roamioFull} alt='logo' style={{ "height": "60px" }}></img>
